@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -9,26 +8,76 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import {
-  HeartPulse, Thermometer, User, Activity, Zap, BarChart3, Brain, AlertCircle, Bell, Settings, RefreshCw, TrendingUp, ClipboardEdit, Smile, Meh, Frown
+  UserCog,
+  HeartPulse,
+  Activity,
+  ActivitySquare,
+  Droplets,
+  Footprints,
+  Zap,
+  Timer,
+  Bed,
+  MoonStar,
+  User,
+  Flame,
+
+  MapPin,
+  Home,
+  Smile,
+  Meh,
+  Frown,
+  ClipboardEdit,
+  Ruler,
+  TrendingUp,
+  BarChart3,
+  Brain,
+  AlertCircle,
+  Bell,
+  Settings,
+  RefreshCw,
+  Calendar,
+  Weight,
+  UserCircle,
+  GlassWater,
+  Wine,
+  Cigarette,
+  Hospital,
+  Sad,
+  Gauge,
+  Globe,
+  LandPlot,Stethoscope
 } from "lucide-react";
+
 import * as LucideIcons from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { analyzeStressAndSuggest } from "@/ai/flows/stress-analysis-flow";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from "@/components/ui/chart";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
-
 const initialTrackedMetrics = [
-  { key: "hrv", label: "HRV", defaultValue: 65, unit: "ms", icon: HeartPulse, inputType: "number", placeholder: "e.g., 65" },
-  { key: "temperature", label: "Temperature", defaultValue: 36.5, unit: "°C", icon: Thermometer, inputType: "number", step: "0.1", placeholder: "e.g., 36.5" },
-  { key: "age", label: "Age", defaultValue: 30, unit: "years", icon: User, inputType: "number", placeholder: "e.g., 30" },
-  { key: "bloodPressureSystolic", label: "Systolic BP", defaultValue: 120, unit: "mmHg", icon: Activity, inputType: "number", placeholder: "e.g., 120" },
-  { key: "bloodPressureDiastolic", label: "Diastolic BP", defaultValue: 80, unit: "mmHg", icon: Activity, inputType: "number", placeholder: "e.g., 80" },
-  { key: "oxygenSaturation", label: "Oxygen Saturation", defaultValue: 98, unit: "%", icon: Zap, inputType: "number", placeholder: "e.g., 98" },
-  { key: "sleepHours", label: "Sleep Last 24h", defaultValue: 7, unit: "hours", icon: LucideIcons.Bed, inputType: "number", step: "0.5", placeholder: "e.g., 7" },
-  { key: "activityLevel", label: "Activity Level", defaultValue: "moderate", unit: "", icon: LucideIcons.Footprints, inputType: "select", options: ["sedentary", "light", "moderate", "high"] },
+  { key: "HR", label: "Heart Rate", defaultValue: 75, unit: "bpm", icon: HeartPulse, inputType: "number", min: 50, max: 160, placeholder: "e.g., 75" },
+  { key: "HRV", label: "HRV", defaultValue: 65, unit: "ms", icon: ActivitySquare, inputType: "number", min: 15, max: 120, placeholder: "e.g., 65" },
+  { key: "SpO2", label: "Oxygen Saturation", defaultValue: 98, unit: "%", icon: Droplets, inputType: "number", min: 88, max: 100, placeholder: "e.g., 98" },
+  { key: "Steps", label: "Steps", defaultValue: 300, unit: "", icon: Footprints, inputType: "number", min: 0, max: 600, placeholder: "e.g., 300" },
+  { key: "Distance", label: "Distance", defaultValue: 0.3, unit: "km", icon: MapPin, inputType: "number", min: 0.0, max: 0.6, step: "0.01", placeholder: "e.g., 0.3" },
+  { key: "Calories", label: "Calories", defaultValue: 6, unit: "kcal", icon: Flame, inputType: "number", min: 2, max: 10, step: "0.1", placeholder: "e.g., 6" },
+  { key: "ActiveTime", label: "Active Time", defaultValue: 2, unit: "min", icon: Timer, inputType: "number", min: 0, max: 5, placeholder: "e.g., 2" },
+  { key: "SleepDuration", label: "Sleep Duration", defaultValue: 7, unit: "hours", icon: Bed, inputType: "number", min: 0, max: 9, step: "0.1", placeholder: "e.g., 7" },
+  { key: "SleepEfficiency", label: "Sleep Efficiency", defaultValue: 85, unit: "%", icon: MoonStar, inputType: "number", min: 60, max: 95, placeholder: "e.g., 85" },
+  { key: "Height", label: "Height", defaultValue: 170, unit: "cm", icon: Ruler, inputType: "number", min: 130, max: 190, placeholder: "e.g., 170" },
+  { key: "Weight", label: "Weight", defaultValue: 65, unit: "kg", icon: Weight, inputType: "number", min: 10, max: 100, placeholder: "e.g., 65" },
+  { key: "Age", label: "Age", defaultValue: 30, unit: "years", icon: User, inputType: "number", min: 18, max: 65, placeholder: "e.g., 30" },
+  { key: "Sex", label: "Sex", defaultValue: "Female", unit: "", icon: UserCog, inputType: "select", options: ["Female", "Male", "Other"] },
+  { key: "DrinkingHabits", label: "Drinking Habits", defaultValue: "Occasional", unit: "", icon: GlassWater, inputType: "select", options: ["None", "Occasional", "Regular"] },
+  { key: "SmokingHabits", label: "Smoking Habits", defaultValue: "Non-smoker", unit: "", icon: Cigarette, inputType: "select", options: ["Non-smoker", "Occasional", "Regular"] },
+  { key: "PastMedicalHistory", label: "Past Medical History", defaultValue: "Hypertension", unit: "", icon: Stethoscope, inputType: "select", options: ["","Diabetes","Hypertension","Other"] },
+  { key: "Depression", label: "Depression", defaultValue: "No", unit: "", icon: Frown, inputType: "select", options: ["No", "Yes"] },
+  { key: "Context", label: "Context", defaultValue: "Home", unit: "", icon: Globe, inputType: "select", options: ["Sleep", "Home", "Work", "Commute", "Exercise", "Social"] },
 ];
 
+const getCurrentDayOfWeek = () => {
+  return ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][new Date().getDay()];
+};
 const DynamicIcon = ({ name, ...props }) => {
   const IconComponent = LucideIcons[name];
   if (!IconComponent) {
@@ -37,6 +86,18 @@ const DynamicIcon = ({ name, ...props }) => {
   return <IconComponent {...props} />;
 };
 
+// Define which metrics to display in "Current Status"
+const displayedMetricKeys = [
+  "HR",
+  "HRV",
+  "SpO2",
+  "Steps",
+  "Distance",
+  "Calories",
+  "ActiveTime",
+  "SleepDuration",
+  "SleepEfficiency",
+];
 
 export default function StressDetectionPage() {
   const [currentMetricValues, setCurrentMetricValues] = useState(() => {
@@ -71,10 +132,12 @@ export default function StressDetectionPage() {
       }
     }
     
-    // Initialize displayedMetricsInStatus with default values
+    // Initialize displayedMetricsInStatus with only the selected metrics
     const initialDisplayMetrics = {};
     initialTrackedMetrics.forEach(metric => {
+      if (displayedMetricKeys.includes(metric.key)) {
         initialDisplayMetrics[metric.key] = { value: metric.defaultValue, unit: metric.unit, label: metric.label, icon: metric.icon };
+      }
     });
     setDisplayedMetricsInStatus(initialDisplayMetrics);
 
@@ -90,81 +153,129 @@ export default function StressDetectionPage() {
     setCurrentMetricValues(prev => ({ ...prev, [key]: initialTrackedMetrics.find(m => m.key === key)?.inputType === 'number' ? (value === '' ? '' : Number(value)) : value }));
   };
 
-  const handleUpdateMetrics = async () => {
-    setIsLoading(true);
-    setStressAnalysis(null); // Clear previous analysis
+const handleUpdateMetrics = async () => {
+  setIsLoading(true);
+  setStressAnalysis(null);
 
-    const metricsForAI = {
-      hrv: Number(currentMetricValues.hrv),
-      temperature: Number(currentMetricValues.temperature),
-      age: Number(currentMetricValues.age),
-      bloodPressureSystolic: Number(currentMetricValues.bloodPressureSystolic),
-      bloodPressureDiastolic: Number(currentMetricValues.bloodPressureDiastolic),
-      oxygenSaturation: Number(currentMetricValues.oxygenSaturation),
-      sleepHours: Number(currentMetricValues.sleepHours),
-      activityLevel: currentMetricValues.activityLevel,
-    };
-    
-    // Update displayed metrics for the "Current Status" card
-    const newDisplayedMetrics = {};
-    initialTrackedMetrics.forEach(metric => {
-        newDisplayedMetrics[metric.key] = { 
-            value: currentMetricValues[metric.key], 
-            unit: metric.unit, 
-            label: metric.label,
-            icon: metric.icon
-        };
-    });
-    setDisplayedMetricsInStatus(newDisplayedMetrics);
-
-
-    try {
-      const result = await analyzeStressAndSuggest(metricsForAI);
-      setStressAnalysis(result);
-
-      const today = new Date();
-      const newHistoryEntry = {
-        date: today.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' }), // Format as M/D
-        stress: result.stressLevel,
-      };
-      
-      // Add new entry and keep last 14 entries
-      setStressHistory(prevHistory => {
-        const updatedHistory = [...prevHistory, newHistoryEntry];
-        return updatedHistory.slice(-14); 
-      });
-
-      toast({
-        title: "Stress Analysis Complete",
-        description: result.stressCategory ? `Your estimated stress level is ${result.stressCategory}.` : "Analysis updated.",
-      });
-    } catch (error) {
-      console.error("Stress analysis error:", error);
-      toast({
-        title: "Analysis Error",
-        description: error.message || "Could not analyze stress. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+  // Validate and format metrics for API
+  const metricsForAPI = {
+    UserID: "U999", // Default user ID
+    HR: Number(currentMetricValues.HR),
+    HRV: Number(currentMetricValues.HRV),
+    SpO2: Number(currentMetricValues.SpO2),
+    Steps: Number(currentMetricValues.Steps),
+    Distance: Number(currentMetricValues.Distance),
+    Calories: Number(currentMetricValues.Calories),
+    ActiveTime: Number(currentMetricValues.ActiveTime),
+    SleepDuration: Number(currentMetricValues.SleepDuration),
+    SleepEfficiency: Number(currentMetricValues.SleepEfficiency),
+    Height: Number(currentMetricValues.Height),
+    Weight: Number(currentMetricValues.Weight),
+    Age: Number(currentMetricValues.Age),
+    Sex: currentMetricValues.Sex,
+    DrinkingHabits: currentMetricValues.DrinkingHabits,
+    SmokingHabits: currentMetricValues.SmokingHabits,
+    PastMedicalHistory: currentMetricValues.PastMedicalHistory === "Other" ? "None" : currentMetricValues.PastMedicalHistory,
+    Depression: currentMetricValues.Depression,
+    Context: currentMetricValues.Context
   };
+
+  // Only display selected metrics in "Current Status"
+  const newDisplayedMetrics = {};
+  initialTrackedMetrics.forEach(metric => {
+    if (displayedMetricKeys.includes(metric.key)) {
+      newDisplayedMetrics[metric.key] = {
+        value: currentMetricValues[metric.key],
+        unit: metric.unit,
+        label: metric.label,
+        icon: metric.icon
+      };
+    }
+  });
+  setDisplayedMetricsInStatus(newDisplayedMetrics);
+
+  try {
+    const response = await fetch('http://127.0.0.1:8000/predict', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(metricsForAPI),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP error! status: ${response.status}. ${errorText}`);
+    }
+
+    const result = await response.json();
+    console.log(result);
+
+    // Combine metrics with model results for AI analysis
+    const combinedInput = {
+      ...metricsForAPI,
+      modelStressLevel: result.stressLevel,
+      modelStressCategory: result.stressCategory,
+      modelProbabilities: result.probabilities,
+      DayOfWeek: getCurrentDayOfWeek()
+    };
+
+    // Get suggestions and analysis from AI
+    const aiAnalysis = await analyzeStressAndSuggest(combinedInput);
+
+    // Combine model results with AI suggestions
+    const stressAnalysis = {
+      stressLevel: result.stressLevel,
+      stressCategory: result.stressCategory,
+      probability: Object.values(result.probabilities).find(p => p === Math.max(...Object.values(result.probabilities))),
+      primarySuggestion: aiAnalysis.primarySuggestion,
+      secondarySuggestions: aiAnalysis.secondarySuggestions,
+      analysisSummary: aiAnalysis.analysisSummary
+    };
+
+    setStressAnalysis(stressAnalysis);
+
+    const today = new Date();
+    const newHistoryEntry = {
+      date: today.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' }),
+      stress: result.stressLevel,
+    };
+    setStressHistory(prevHistory => {
+      const updatedHistory = [...prevHistory, newHistoryEntry];
+      return updatedHistory.slice(-14);
+    });
+
+    toast({
+      title: "Stress Analysis Complete",
+      description: stressAnalysis.stressCategory ? `Your estimated stress level is ${stressAnalysis.stressCategory}.` : "Analysis updated.",
+    });
+  } catch (error) {
+    console.error("Stress analysis error:", error);
+    toast({
+      title: "Analysis Error",
+      description: error.message || "Could not analyze stress. Please ensure the server is running and try again.",
+      variant: "destructive",
+    });
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const getStressBadgeVariant = (category) => {
     if (!category) return "secondary";
     switch (category.toLowerCase()) {
-      case "low": return "default"; // Using primary for low stress as positive
-      case "moderate": return "secondary"; // Yellowish
-      case "high": return "destructive"; // Reddish
-      case "extreme": return "destructive";
+      case "low": return "default";
+      case "medium": // Handle both "medium" and "moderate" cases
+      case "moderate": return "secondary";
+      case "high": return "destructive";
       default: return "outline";
     }
   };
   
   const getStressIcon = (level) => {
     if (level === null || level === undefined) return <Meh className="h-5 w-5" />;
-    if (level <= 3) return <Smile className="h-5 w-5 text-green-500" />;
-    if (level <= 6) return <Meh className="h-5 w-5 text-yellow-500" />;
+    if (level === 1) return <Smile className="h-5 w-5 text-green-500" />;
+    if (level === 2) return <Meh className="h-5 w-5 text-yellow-500" />;
     return <Frown className="h-5 w-5 text-red-500" />;
   };
 
@@ -227,7 +338,7 @@ export default function StressDetectionPage() {
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
               <CardTitle className="flex items-center gap-2"><TrendingUp className="h-5 w-5 text-primary" /> Stress Trends</CardTitle>
-              <CardDescription>Your stress levels over the past two weeks (0 = No Stress, 10 = Extreme Stress).</CardDescription>
+              <CardDescription>Your stress levels over time (1 = Low Stress, 3 = High Stress).</CardDescription>
             </div>
             <Button variant="outline" size="sm" onClick={() => { /* Future: Implement refresh logic */ toast({ title: "Chart refreshed (placeholder)"}) }}>
               <RefreshCw className="mr-2 h-4 w-4" /> Refresh
@@ -239,7 +350,7 @@ export default function StressDetectionPage() {
                 <LineChart data={stressHistory} margin={{ top: 5, right: 20, left: -25, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                   <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                  <YAxis domain={[0, 10]} allowDecimals={false} stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                  <YAxis domain={[1, 3]} allowDecimals={false} stroke="hsl(var(--muted-foreground))" fontSize={12} ticks={[1, 2, 3]} />
                   <Tooltip
                     contentStyle={{ backgroundColor: "hsl(var(--background))", border: "1px solid hsl(var(--border))", borderRadius: "var(--radius)"}}
                     labelStyle={{ color: "hsl(var(--foreground))" }}
@@ -272,7 +383,7 @@ export default function StressDetectionPage() {
                 <Badge variant={getStressBadgeVariant(stressAnalysis.stressCategory)} className="text-lg px-4 py-2">
                   {getStressIcon(stressAnalysis.stressLevel)} <span className="ml-2">{stressAnalysis.stressCategory} Stress</span> 
                 </Badge>
-                {stressAnalysis.stressLevel !== null && <p className="text-sm text-muted-foreground mt-1">Score: {stressAnalysis.stressLevel}/10</p>}
+                {/* {stressAnalysis.stressLevel !== null && <p className="text-sm text-muted-foreground mt-1">Score: {stressAnalysis.stressLevel}/10</p>} */}
               </div>
             ) : (
               <p className="text-sm text-muted-foreground text-center py-2">Update metrics for current stress status.</p>
