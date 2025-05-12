@@ -70,7 +70,7 @@ const initialTrackedMetrics = [
   { key: "Sex", label: "Sex", defaultValue: "Female", unit: "", icon: UserCog, inputType: "select", options: ["Female", "Male", "Other"] },
   { key: "DrinkingHabits", label: "Drinking Habits", defaultValue: "Occasional", unit: "", icon: GlassWater, inputType: "select", options: ["None", "Occasional", "Regular"] },
   { key: "SmokingHabits", label: "Smoking Habits", defaultValue: "Non-smoker", unit: "", icon: Cigarette, inputType: "select", options: ["Non-smoker", "Occasional", "Regular"] },
-  { key: "PastMedicalHistory", label: "Past Medical History", defaultValue: "Hypertension", unit: "", icon: Stethoscope, inputType: "select", options: ["","Diabetes","Hypertension","Other"] },
+  { key: "PastMedicalHistory", label: "Past Medical History", defaultValue: "Hypertension", unit: "", icon: Stethoscope, inputType: "select", options: ["None", "Diabetes", "Hypertension", "Other"] },
   { key: "Depression", label: "Depression", defaultValue: "No", unit: "", icon: Frown, inputType: "select", options: ["No", "Yes"] },
   { key: "Context", label: "Context", defaultValue: "Home", unit: "", icon: Globe, inputType: "select", options: ["Sleep", "Home", "Work", "Commute", "Exercise", "Social"] },
 ];
@@ -175,7 +175,7 @@ const handleUpdateMetrics = async () => {
     Sex: currentMetricValues.Sex,
     DrinkingHabits: currentMetricValues.DrinkingHabits,
     SmokingHabits: currentMetricValues.SmokingHabits,
-    PastMedicalHistory: currentMetricValues.PastMedicalHistory === "Other" ? "None" : currentMetricValues.PastMedicalHistory,
+    PastMedicalHistory: currentMetricValues.PastMedicalHistory === "" ? null : currentMetricValues.PastMedicalHistory,
     Depression: currentMetricValues.Depression,
     Context: currentMetricValues.Context
   };
