@@ -1,39 +1,5 @@
 {
-  "node": {
-    "40b3206493c8ac8cda6100d7b2816ac1f20bf571cc": {
-      "workers": {
-        "app/journal/page": {
-          "moduleId": "[project]/.next-internal/server/app/journal/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/ai/flows/sentiment-analysis.js [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
-          "async": false
-        }
-      },
-      "layer": {
-        "app/journal/page": "action-browser"
-      }
-    },
-    "405fef6bd1d497204830e8c940f9d880e3e2c43fbc": {
-      "workers": {
-        "app/stress-detection/page": {
-          "moduleId": "[project]/.next-internal/server/app/stress-detection/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/ai/flows/stress-analysis-flow.js [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
-          "async": false
-        }
-      },
-      "layer": {
-        "app/stress-detection/page": "action-browser"
-      }
-    },
-    "409e9d21ded5e8a16e29ca44858166e099d8e4330f": {
-      "workers": {
-        "app/ai-therapist/page": {
-          "moduleId": "[project]/.next-internal/server/app/ai-therapist/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/ai/flows/therapist-chat-flow.js [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
-          "async": false
-        }
-      },
-      "layer": {
-        "app/ai-therapist/page": "action-browser"
-      }
-    }
-  },
+  "node": {},
   "edge": {},
   "encryptionKey": "OklyPyou3T4ID0k11w/YdF83Yw3VUliaJ1xqlJprw2E="
 }
