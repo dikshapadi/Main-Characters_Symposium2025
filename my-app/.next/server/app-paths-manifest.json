@@ -1,1 +1,7 @@
-{}
+{
+  "/cloner/page": "app/cloner/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/page": "app/page.js",
+  "/voice-clarity/page": "app/voice-clarity/page.js",
+  "/work-automation/page": "app/work-automation/page.js"
+}
