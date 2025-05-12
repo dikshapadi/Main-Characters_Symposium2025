@@ -13,7 +13,7 @@ const navItems = [
   { href: "/journal", label: "Journal", icon: BookOpenText },
   { href: "/voice-clarity", label: "Voice Clarity", icon: MicVocal },
   { href: "/work-automation", label: "Work Automation", icon: Settings },
-  { href: "/ai-therapist", label: "AI Therapist", icon: LucideBot },
+  { href: "/ai-therapist", label: "Your AI Therapist", icon: LucideBot },
 ];
 
 export function AppShell({ children }) {
