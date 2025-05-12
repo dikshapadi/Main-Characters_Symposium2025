@@ -17,19 +17,19 @@ export default function VoiceControlPage() {
         <CardHeader className="p-0">
           <CardTitle className="text-3xl font-bold tracking-tight">Work automation</CardTitle>
           <CardDescription>
-            Integrate your outlook account to control application features using voice commands.
+            Integrate your outlook account to control application features using one click commands.
           </CardDescription>
         </CardHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="connect">Connect Assistant</TabsTrigger>
+            <TabsTrigger value="connect">Connect Outlook</TabsTrigger>
             <TabsTrigger
               value="commands"
               disabled={!isDeviceConnected} // Disable tab if not connected
               className={!isDeviceConnected ? "opacity-50 cursor-not-allowed" : ""}
             >
-              Voice Commands
+              Automation Commands
             </TabsTrigger>
             <TabsTrigger value="activity">Command Activity</TabsTrigger>
           </TabsList>
