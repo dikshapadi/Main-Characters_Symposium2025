@@ -26,14 +26,14 @@ export default function Home() {
       {/* Hero Content */}
       <main className="relative z-20 flex flex-col items-center justify-center h-full px-6 text-center">
         <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight drop-shadow-lg">
-          Meet <span className="text-green-500">Daura</span>
+          Meet <span className="text-blue-500">Daura</span>
         </h1>
         <p className="text-xl md:text-2xl max-w-2xl mb-8 drop-shadow-md">
           Your friendly, voice-enabled companion helping neurodivergent and mobility-challenged individuals navigate work and wellness with ease.
         </p>
         <a
-          href="#"
-          className="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-full transition duration-300 shadow-lg"
+          href="/work-automation"
+          className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-full transition duration-300 shadow-lg"
         >
           Start Exploring
         </a>

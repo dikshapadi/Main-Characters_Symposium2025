@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { HeartPulse, BookOpenText, BrainCircuit, Menu, MicVocal } from "lucide-react";
+import { HeartPulse, BookOpenText, BrainCircuit, Menu, MicVocal, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
@@ -12,6 +12,7 @@ const navItems = [
   { href: "/stress-detection", label: "Stress Detection", icon: HeartPulse },
   { href: "/journal", label: "Journal", icon: BookOpenText },
   { href: "/voice-clarity", label: "Voice Clarity", icon: MicVocal },
+  { href: "/work-automation", label: "Work Automation", icon: Settings }
 ];
 
 export function AppShell({ children }) {
