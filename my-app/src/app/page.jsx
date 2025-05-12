@@ -27,6 +27,7 @@ export default function Home() {
       <main className="relative z-20 flex flex-col items-center justify-center h-full px-6 text-center">
         <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight drop-shadow-lg">
           Meet <span className="text-blue-500">Daura</span>
+          {/* Daura is your guided companion */}
         </h1>
         <p className="text-xl md:text-2xl max-w-2xl mb-8 drop-shadow-md">
           Your friendly, voice-enabled companion helping neurodivergent and mobility-challenged individuals navigate work and wellness with ease.

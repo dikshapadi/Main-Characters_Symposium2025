@@ -1,5 +1,16 @@
 {
   "node": {
+    "400b10abe06900147b4ae6c25a25090be7084d0025": {
+      "workers": {
+        "app/voice-clarity/page": {
+          "moduleId": "[project]/.next-internal/server/app/voice-clarity/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/ai/flows/voice-clarity-flow.js [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/voice-clarity/page": "action-browser"
+      }
+    },
     "409e9d21ded5e8a16e29ca44858166e099d8e4330f": {
       "workers": {
         "app/ai-therapist/page": {
