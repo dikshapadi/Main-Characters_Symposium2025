@@ -6,11 +6,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ConnectAssistantTab from "@/components/voice-control/connect-assistant-tab";
 import VoiceCommandsTab from "@/components/voice-control/voice-commands-tab";
 import CommandActivityTab from "@/components/voice-control/command-activity-tab";
-import { AppShell } from "@/components/layout/app-shell"; // Import AppShell
 
 export default function VoiceControlPage() {
   const [activeTab, setActiveTab] = useState("connect");
-  const [isDeviceConnected, setIsDeviceConnected] = useState(false); // Track connection status
+  const [isDeviceConnected, setIsDeviceConnected] = useState(false); 
 
   return (
       <div className="space-y-6">
@@ -26,7 +25,7 @@ export default function VoiceControlPage() {
             <TabsTrigger value="connect">Connect Outlook</TabsTrigger>
             <TabsTrigger
               value="commands"
-              disabled={!isDeviceConnected} // Disable tab if not connected
+              disabled={!isDeviceConnected} 
               className={!isDeviceConnected ? "opacity-50 cursor-not-allowed" : ""}
             >
               Automation Commands

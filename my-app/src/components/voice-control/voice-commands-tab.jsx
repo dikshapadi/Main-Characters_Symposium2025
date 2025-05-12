@@ -105,8 +105,23 @@ export default function VoiceCommandsTab() {
 
         // Speak the response aloud
         const utterance = new SpeechSynthesisUtterance(details);
-        utterance.lang = "en-US"; // Set the language
-        speechSynthesis.speak(utterance); // Speak the text
+        utterance.lang = "en-IN"; 
+
+        const voices = speechSynthesis.getVoices();
+
+        const femaleVoice = voices.find((voice) => 
+          voice.name.toLowerCase().includes("female") || 
+          voice.name.toLowerCase().includes("google us english")
+        );
+
+        if (femaleVoice) {
+          utterance.voice = femaleVoice;
+        } else {
+          console.warn("No female voice found. Using default voice.");
+        }
+
+        // Speak the text
+        speechSynthesis.speak(utterance);
       } catch (error) {
         console.error("Error executing command:", error);
 
