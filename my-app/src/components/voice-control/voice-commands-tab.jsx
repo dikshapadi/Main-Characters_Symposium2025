@@ -10,6 +10,7 @@ import { PlusCircle, Play, Trash2, Settings, ListChecks, AlertTriangle } from "l
 import { useToast } from "@/hooks/use-toast";
 import axios from "axios"; 
 import { useActivity } from "@/context/activity-context";
+import { Input } from "../ui/input";
 
 const initialCommands = [
   {
@@ -17,6 +18,13 @@ const initialCommands = [
     title: "Get My Meetings",
     description: "Fetches your meetings for today from the calendar.",
     phrase: "Get my meetings",
+    enabled: true,
+  },
+   {
+    id: 2,
+    title: "Get My GitHub PR Reviews",
+    description: "Fetches your GitHub pull request reviews by automating VS Code.",
+    phrase: "Get my GitHub PR reviews",
     enabled: true,
   },
 
@@ -27,6 +35,8 @@ export default function VoiceCommandsTab() {
   const { addActivity } = useActivity(); // Access the activity context
   const [commands, setCommands] = useState(initialCommands);
   const [editingPhrases, setEditingPhrases] = useState({});
+  const [repoName, setRepoName] = useState(""); // State to store the repository name
+
 
   const handlePhraseChange = (id, value) => {
     setEditingPhrases(prev => ({ ...prev, [id]: value }));
@@ -142,7 +152,66 @@ export default function VoiceCommandsTab() {
       }
       return;
     }
+    if (command.title === "Get My GitHub PR Reviews") {
+         if (!repoName) {
+        toast({
+          title: "Repository Name Required",
+          description: "Please enter a repository name to fetch PR reviews.",
+          variant: "destructive",
+        });
+        return;
+      }
+        try {
+      toast({ title: "Fetching GitHub PR Reviews", description: "Please wait..." });
 
+      // Call the desktop automation script
+            console.log("Repo Name being sent to server:", repoName);
+
+      const response = await axios.post("http://localhost:5000/run-script", {
+        command: "get-github-pr-reviews",
+        repoName,
+      });
+      const details = response.data.message;
+
+      // Log the activity
+      addActivity({
+        id: Date.now(),
+        timestamp: new Date().toISOString(),
+        command: command.phrase,
+        status: "success",
+        details,
+      });
+
+      // Display the response
+      toast({
+        title: `${command.title} Executed`,
+        description: details,
+      });
+
+      // Speak the response aloud
+      const utterance = new SpeechSynthesisUtterance(details);
+      utterance.lang = "en-IN";
+      speechSynthesis.speak(utterance);
+    } catch (error) {
+      console.error("Error executing command:", error);
+
+      // Log the failure
+      addActivity({
+        id: Date.now(),
+        timestamp: new Date().toISOString(),
+        command: command.phrase,
+        status: "failure",
+        details: "Failed to execute the command.",
+      });
+
+      toast({
+        title: "Error",
+        description: "Failed to execute the command. Please try again.",
+        variant: "destructive",
+      });
+    }
+    return;
+  }
     // Default behavior for other commands
     toast({
       title: "Simulating Command Run",
@@ -185,6 +254,18 @@ export default function VoiceCommandsTab() {
         
       </CardHeader>
       <CardContent>
+        <div className="mb-4">
+          <Label htmlFor="repo-name" className="text-sm text-muted-foreground">
+            GitHub Repository Name (e.g., owner/repo-name)
+          </Label>
+          <Input
+            id="repo-name"
+            value={repoName}
+            onChange={(e) => setRepoName(e.target.value)}
+            placeholder="Enter repository name"
+            className="mt-1"
+          />
+        </div>
         {commands.length > 0 ? (
           <div className="space-y-4">
             {commands.map((command) => (
@@ -263,3 +344,4 @@ export default function VoiceCommandsTab() {
     </Card>
   );
 }
+
