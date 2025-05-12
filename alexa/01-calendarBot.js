@@ -7,7 +7,8 @@ const { DateTime } = require("luxon");
 
 const app = express();
 app.use(bodyParser.json());
-
+const cors = require("cors");
+app.use(cors());
 const PORT = 3000;
 
 app.post("/", async (req, res) => {
