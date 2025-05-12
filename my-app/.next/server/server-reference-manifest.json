@@ -1,5 +1,28 @@
 {
-  "node": {},
+  "node": {
+    "4079232ba079972740141f56f3543885690d398b46": {
+      "workers": {
+        "app/voice-clarity/page": {
+          "moduleId": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Fprshashank%2FMy%20projects%2FMain-Characters_Symposium2025%2Fmy-app%2Fsrc%2Fai%2Fflows%2Fvoice-clarity-flow.js%22%2C%5B%7B%22id%22%3A%224079232ba079972740141f56f3543885690d398b46%22%2C%22exportedName%22%3A%22enhanceVoiceClarity%22%7D%5D%5D%5D&__client_imported__=true!",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/voice-clarity/page": "action-browser"
+      }
+    },
+    "40f12f1f0ca192cb6ea0d05a945770e177413e0098": {
+      "workers": {
+        "app/ai-therapist/page": {
+          "moduleId": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Fprshashank%2FMy%20projects%2FMain-Characters_Symposium2025%2Fmy-app%2Fsrc%2Fai%2Fflows%2Ftherapist-chat-flow.js%22%2C%5B%7B%22id%22%3A%2240f12f1f0ca192cb6ea0d05a945770e177413e0098%22%2C%22exportedName%22%3A%22getTherapistResponse%22%7D%5D%5D%5D&__client_imported__=true!",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/ai-therapist/page": "action-browser"
+      }
+    }
+  },
   "edge": {},
   "encryptionKey": "1KvM7077t6dnnNiX9y1nI3tFxRK5Ctznj6MgOrwRvhc="
 }
