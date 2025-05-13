@@ -60,16 +60,16 @@ import {
 const initialTrackedMetrics = [
   { key: "HR", label: "Heart Rate", defaultValue: 75, unit: "bpm", icon: HeartPulse, inputType: "number", min: 50, max: 160, placeholder: "e.g., 75" },
   { key: "HRV", label: "HRV", defaultValue: 65, unit: "ms", icon: ActivitySquare, inputType: "number", min: 15, max: 120, placeholder: "e.g., 65" },
-  { key: "SpO2", label: "Oxygen Saturation", defaultValue: 98, unit: "%", icon: Droplets, inputType: "number", min: 88, max: 100, placeholder: "e.g., 98" },
+  { key: "SpO2", label: "Oxygen Saturation", defaultValue: 98, unit: "%", icon: Droplets, inputType: "number", min: 80, max: 100, placeholder: "e.g., 98" },
   { key: "Steps", label: "Steps", defaultValue: 300, unit: "", icon: Footprints, inputType: "number", min: 0, max: 600, placeholder: "e.g., 300" },
-  { key: "Distance", label: "Distance", defaultValue: 0.3, unit: "km", icon: MapPin, inputType: "number", min: 0.0, max: 0.6, step: "0.01", placeholder: "e.g., 0.3" },
-  { key: "Calories", label: "Calories", defaultValue: 6, unit: "kcal", icon: Flame, inputType: "number", min: 2, max: 10, step: "0.1", placeholder: "e.g., 6" },
+  { key: "Distance", label: "Distance", defaultValue: 0.3, unit: "km", icon: MapPin, inputType: "number", min: 0.0, max: 1.0, step: "0.01", placeholder: "e.g., 0.3" },
+  { key: "Calories", label: "Calories", defaultValue: 6, unit: "kcal", icon: Flame, inputType: "number", min: 0.0, max: 10, step: "0.1", placeholder: "e.g., 6" },
   { key: "ActiveTime", label: "Active Time", defaultValue: 2, unit: "min", icon: Timer, inputType: "number", min: 0, max: 5, placeholder: "e.g., 2" },
   { key: "SleepDuration", label: "Sleep Duration", defaultValue: 7, unit: "hours", icon: Bed, inputType: "number", min: 0, max: 9, step: "0.1", placeholder: "e.g., 7" },
-  { key: "SleepEfficiency", label: "Sleep Efficiency", defaultValue: 85, unit: "%", icon: MoonStar, inputType: "number", min: 60, max: 95, placeholder: "e.g., 85" },
+  { key: "SleepEfficiency", label: "Sleep Efficiency", defaultValue: 85, unit: "%", icon: MoonStar, inputType: "number", min: 10, max: 95, placeholder: "e.g., 85" },
   { key: "Height", label: "Height", defaultValue: 170, unit: "cm", icon: Ruler, inputType: "number", min: 130, max: 190, placeholder: "e.g., 170" },
   { key: "Weight", label: "Weight", defaultValue: 65, unit: "kg", icon: Weight, inputType: "number", min: 10, max: 100, placeholder: "e.g., 65" },
-  { key: "Age", label: "Age", defaultValue: 30, unit: "years", icon: User, inputType: "number", min: 18, max: 65, placeholder: "e.g., 30" },
+  { key: "Age", label: "Age", defaultValue: 30, unit: "years", icon: User, inputType: "number", min: 1, max: 65, placeholder: "e.g., 30" },
   { key: "Sex", label: "Sex", defaultValue: "Female", unit: "", icon: UserCog, inputType: "select", options: ["Female", "Male", "Other"] },
   { key: "DrinkingHabits", label: "Drinking Habits", defaultValue: "Occasional", unit: "", icon: GlassWater, inputType: "select", options: ["None", "Occasional", "Regular"] },
   { key: "SmokingHabits", label: "Smoking Habits", defaultValue: "Non-smoker", unit: "", icon: Cigarette, inputType: "select", options: ["Non-smoker", "Occasional", "Regular"] },
@@ -370,13 +370,7 @@ const getStressIcon = (level) => {
 };
 
 export default function StressDetectionPage() {
-  const [currentMetricValues, setCurrentMetricValues] = useState(() => {
-    const initial = {};
-    initialTrackedMetrics.forEach(metric => {
-      initial[metric.key] = metric.defaultValue;
-    });
-    return initial;
-  });
+  const [currentMetricValues, setCurrentMetricValues] = useState({});
   const [displayedMetricsInStatus, setDisplayedMetricsInStatus] = useState({});
 
 
@@ -469,6 +463,56 @@ export default function StressDetectionPage() {
     }
   }, [stressHistory]);
 
+  useEffect(() => {
+    function getRandomValue(metric) {
+      if (metric.key === "PastMedicalHistory") {
+        const opts = ["Diabetes", "Hypertension", "Other"];
+        return opts[Math.floor(Math.random() * opts.length)];
+      }
+      if (metric.key === "DrinkingHabits") {
+        const opts = ["Occasional", "Regular"];
+        return opts[Math.floor(Math.random() * opts.length)];
+      }
+      if (metric.inputType === "select") {
+        const opts = metric.options;
+        return opts[Math.floor(Math.random() * opts.length)];
+      }
+      const min = metric.min;
+      const max = metric.max;
+      const step = metric.step ? parseFloat(metric.step) : 1;
+      const rand = Math.random();
+      let value = min + rand * (max - min);
+      value = Math.round(value / step) * step;
+      if (step >= 1) value = Math.round(value);
+      if (step < 1) value = Number(value.toFixed(step === 0.01 ? 2 : 1));
+      return value;
+    }
+
+    async function simulateAndAnalyze() {
+      const simulated = {};
+      initialTrackedMetrics.forEach(metric => {
+        simulated[metric.key] = getRandomValue(metric);
+      });
+      setCurrentMetricValues(simulated);
+    }
+
+    simulateAndAnalyze();
+    const interval = setInterval(simulateAndAnalyze, 5 * 60 * 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    // Only run if all values are present (not empty)
+    if (
+      Object.keys(currentMetricValues).length === initialTrackedMetrics.length &&
+      Object.values(currentMetricValues).every(v => v !== undefined && v !== null && v !== "")
+    ) {
+      handleUpdateMetrics();
+    }
+    // eslint-disable-next-line
+  }, [currentMetricValues]);
+
   const handleInputChange = (key, value) => {
     setCurrentMetricValues(prev => ({ ...prev, [key]: initialTrackedMetrics.find(m => m.key === key)?.inputType === 'number' ? (value === '' ? '' : Number(value)) : value }));
   };
@@ -495,7 +539,7 @@ const handleUpdateMetrics = async () => {
     Sex: currentMetricValues.Sex,
     DrinkingHabits: currentMetricValues.DrinkingHabits,
     SmokingHabits: currentMetricValues.SmokingHabits,
-    PastMedicalHistory: currentMetricValues.PastMedicalHistory === "" ? null : currentMetricValues.PastMedicalHistory,
+    PastMedicalHistory: currentMetricValues.PastMedicalHistory === "" ? "None" : currentMetricValues.PastMedicalHistory,
     Depression: currentMetricValues.Depression,
     Context: currentMetricValues.Context
   };
