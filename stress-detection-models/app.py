@@ -1,6 +1,7 @@
 import warnings
 from datetime import datetime
-
+from huggingface_hub import hf_hub_download
+import pickle
 import joblib
 import numpy as np
 import pandas as pd
@@ -14,16 +15,43 @@ CORS(app)
 
 # Load all the required models and preprocessing objects
 try:
-    stacking_clf = joblib.load("stacking_classifier_model.pkl")
-    scaler = joblib.load("scaler.pkl")
-    pca = joblib.load("pca.pkl")
-    label_encoders = joblib.load("label_encoders.pkl")
-    le_target = joblib.load("le_target.pkl")
+    stacking_clf_path = hf_hub_download(
+        repo_id="Nettem-Gayathri/stress_stacked_model",
+        filename="stacking_classifier_model.pkl",
+        cache_dir="./hf_cache"
+    )
+    scaler_path = hf_hub_download(
+        repo_id="Nettem-Gayathri/stress_stacked_model",
+        filename="scaler.pkl",
+        cache_dir="./hf_cache"
+    )
+    pca_path = hf_hub_download(
+        repo_id="Nettem-Gayathri/stress_stacked_model",
+        filename="pca.pkl",
+        cache_dir="./hf_cache"
+    )
+    label_encoders_path = hf_hub_download(
+        repo_id="Nettem-Gayathri/stress_stacked_model",
+        filename="label_encoders.pkl",
+        cache_dir="./hf_cache"
+    )
+    le_target_path = hf_hub_download(
+        repo_id="Nettem-Gayathri/stress_stacked_model",
+        filename="le_target.pkl",
+        cache_dir="./hf_cache"
+    )
+    
+
+    stacking_clf = joblib.load(stacking_clf_path)
+    scaler = joblib.load(scaler_path)
+    pca = joblib.load(pca_path)
+    label_encoders = joblib.load(label_encoders_path)
+    le_target = joblib.load(le_target_path)
     df = pd.read_csv("final_synthetic_stress_dataset.csv")
     df["Timestamp"] = pd.to_datetime(df["Timestamp"])
-    print("Loaded all required models and data.")
-except FileNotFoundError as e:
-    print(f"Error loading files: {e}")
+    print("Loaded all required models and data from Hugging Face Hub (with cache).")
+except Exception as e:
+    print(f"Error loading files from Hugging Face: {e}")
     raise
 
 # Define features and columns

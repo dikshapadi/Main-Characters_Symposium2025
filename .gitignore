@@ -1,3 +1,5 @@
 clear-voice/venv/
 my-app/.next
 stress-detection-models
+stress-detection-models/venv/
+stress-detection-models/hf_cache

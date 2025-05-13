@@ -1,5 +1,17 @@
 {
-  "node": {},
+  "node": {
+    "405fef6bd1d497204830e8c940f9d880e3e2c43fbc": {
+      "workers": {
+        "app/stress-detection/page": {
+          "moduleId": "[project]/.next-internal/server/app/stress-detection/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/ai/flows/stress-analysis-flow.js [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/stress-detection/page": "action-browser"
+      }
+    }
+  },
   "edge": {},
   "encryptionKey": "OklyPyou3T4ID0k11w/YdF83Yw3VUliaJ1xqlJprw2E="
 }
