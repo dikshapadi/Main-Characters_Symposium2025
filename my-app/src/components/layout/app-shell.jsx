@@ -14,7 +14,6 @@ const navItems = [
   { href: "/voice-clarity", label: "Voice Clarity", icon: MicVocal },
   { href: "/work-automation", label: "Work Automation", icon: Settings },
   { href: "/ai-therapist", label: "Your AI Therapist", icon: LucideBot },
-  { href: "/cloner", label: "Clone your voice", icon: Speaker },
 ];
 
 export function AppShell({ children }) {

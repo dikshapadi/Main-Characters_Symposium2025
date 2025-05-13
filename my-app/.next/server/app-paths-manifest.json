@@ -1,4 +1,5 @@
 {
+  "/cloner/page": "app/cloner/page.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
   "/voice-clarity/page": "app/voice-clarity/page.js"
 }
