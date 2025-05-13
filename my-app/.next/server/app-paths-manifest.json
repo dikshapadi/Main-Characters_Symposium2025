@@ -1,6 +1,9 @@
 {
   "/cloner/page": "app/cloner/page.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/journal/page": "app/journal/page.js",
   "/page": "app/page.js",
-  "/voice-clarity/page": "app/voice-clarity/page.js"
+  "/stress-detection/page": "app/stress-detection/page.js",
+  "/voice-clarity/page": "app/voice-clarity/page.js",
+  "/work-automation/page": "app/work-automation/page.js"
 }
