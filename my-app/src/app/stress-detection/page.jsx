@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -86,6 +87,32 @@ const DynamicIcon = ({ name, ...props }) => {
   return <IconComponent {...props} />;
 };
 
+// Add this helper above your component
+function getNeatTicks(min, max) {
+  if (!isFinite(min) || !isFinite(max)) return [];
+  const range = max - min;
+  let step;
+  if (range <= 2) {
+    step = 0.5;
+  } else if (range <= 10) {
+    step = 1;
+  } else if (range <= 50) {
+    step = 5;
+  } else {
+    step = 10;
+  }
+  const start = Math.floor(min / step) * step;
+  const end = Math.ceil(max / step) * step;
+  const ticks = [];
+  for (let v = start; v <= end; v += step) {
+    ticks.push(Number(v.toFixed(2)));
+  }
+  // Always include min and max
+  if (!ticks.includes(Number(min.toFixed(2)))) ticks.unshift(Number(min.toFixed(2)));
+  if (!ticks.includes(Number(max.toFixed(2)))) ticks.push(Number(max.toFixed(2)));
+  return Array.from(new Set(ticks)).sort((a, b) => a - b);
+}
+
 // Define which metrics to display in "Current Status"
 const displayedMetricKeys = [
   "HR",
@@ -98,6 +125,13 @@ const displayedMetricKeys = [
   "SleepDuration",
   "SleepEfficiency",
 ];
+
+const getStressIcon = (level) => {
+  if (level === 1) return <Smile className="h-5 w-5 text-green-500" />;
+  if (level === 2) return <Meh className="h-5 w-5 text-yellow-500" />;
+  if (level === 3) return <Frown className="h-5 w-5 text-red-500" />;
+  return <Meh className="h-5 w-5" />;
+};
 
 export default function StressDetectionPage() {
   const [currentMetricValues, setCurrentMetricValues] = useState(() => {
@@ -115,13 +149,77 @@ export default function StressDetectionPage() {
   const [stressHistory, setStressHistory] = useState([]);
   const { toast } = useToast();
 
+  const metricChartKeys = [
+    { key: "stress", label: "Stress", color: "hsl(var(--primary))", icon: Frown, yDomain: [1, 3], yTicks: [1, 2, 3], description: "Your stress levels over time (1 = Low Stress, 3 = High Stress)." },
+    { key: "HR", label: "Heart Rate", color: "#ef4444", icon: HeartPulse, description: "Heart Rate over time." },
+    { key: "HRV", label: "HRV", color: "#6366f1", icon: ActivitySquare, description: "HRV over time." },
+    { key: "SpO2", label: "Oxygen Saturation", color: "#06b6d4", icon: Droplets, description: "Oxygen Saturation over time." },
+    { key: "Steps", label: "Steps", color: "#22c55e", icon: Footprints, description: "Steps over time." },
+    { key: "Distance", label: "Distance", color: "#f59e42", icon: MapPin, description: "Distance over time." },
+    { key: "Calories", label: "Calories", color: "#fbbf24", icon: Flame, description: "Calories over time." },
+    { key: "ActiveTime", label: "Active Time", color: "#a21caf", icon: Timer, description: "Active Time over time." },
+    { key: "SleepDuration", label: "Sleep Duration", color: "#0ea5e9", icon: Bed, description: "Sleep Duration over time." },
+    { key: "SleepEfficiency", label: "Sleep Efficiency", color: "#eab308", icon: MoonStar, description: "Sleep Efficiency over time." },
+  ];
+
+  const [metricChartIndex, setMetricChartIndex] = useState(0);
+
+  const handlePrevChart = () => setMetricChartIndex(i => (i === 0 ? metricChartKeys.length - 1 : i - 1));
+  const handleNextChart = () => setMetricChartIndex(i => (i === metricChartKeys.length - 1 ? 0 : i + 1));
+
+  // Prepare chart data for each metric (using stressHistory dates and currentMetricValues for demo)
+  const chartData = stressHistory.map(entry => ({
+    date: entry.date,
+    HR: entry.HR,
+    HRV: entry.HRV,
+    SpO2: entry.SpO2,
+    Steps: entry.Steps,
+    Distance: entry.Distance,
+    Calories: entry.Calories,
+    ActiveTime: entry.ActiveTime,
+    SleepDuration: entry.SleepDuration,
+    SleepEfficiency: entry.SleepEfficiency,
+    stress: entry.stress,
+  }));
+
+  // Get the current metric key
+  const currentMetricKey = metricChartKeys[metricChartIndex].key;
+
+  // Get all values for the current metric
+  const metricValues = chartData
+    .map(d => d[currentMetricKey])
+    .filter(v => typeof v === "number" && !isNaN(v));
+
+  // Compute min/max with some padding
+  let yMin = Math.min(...metricValues);
+  let yMax = Math.max(...metricValues);
+
+  if (yMin === yMax) {
+    // If all values are the same, add a small range for better display
+    yMin = yMin - 1;
+    yMax = yMax + 1;
+  } else {
+    // Add 5% padding
+    const padding = (yMax - yMin) * 0.05;
+    yMin = yMin - padding;
+    yMax = yMax + padding;
+  }
+
   useEffect(() => {
     const storedHistory = localStorage.getItem("stressHistory");
     if (storedHistory) {
       try {
         const parsedHistory = JSON.parse(storedHistory);
-        // Basic validation
-        if (Array.isArray(parsedHistory) && parsedHistory.every(item => typeof item.date === 'string' && typeof item.stress === 'number')) {
+        // Validate that each entry has all required fields
+        if (
+          Array.isArray(parsedHistory) &&
+          parsedHistory.every(item =>
+            typeof item.date === 'string' &&
+            typeof item.stress === 'number' &&
+            ["HR","HRV","SpO2","Steps","Distance","Calories","ActiveTime","SleepDuration","SleepEfficiency"]
+              .every(key => typeof item[key] === 'number')
+          )
+        ) {
           setStressHistory(parsedHistory);
         } else {
           localStorage.removeItem("stressHistory"); // Clear invalid data
@@ -239,6 +337,15 @@ const handleUpdateMetrics = async () => {
     const newHistoryEntry = {
       date: today.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' }),
       stress: result.stressLevel,
+      HR: Number(currentMetricValues.HR),
+      HRV: Number(currentMetricValues.HRV),
+      SpO2: Number(currentMetricValues.SpO2),
+      Steps: Number(currentMetricValues.Steps),
+      Distance: Number(currentMetricValues.Distance),
+      Calories: Number(currentMetricValues.Calories),
+      ActiveTime: Number(currentMetricValues.ActiveTime),
+      SleepDuration: Number(currentMetricValues.SleepDuration),
+      SleepEfficiency: Number(currentMetricValues.SleepEfficiency),
     };
     setStressHistory(prevHistory => {
       const updatedHistory = [...prevHistory, newHistoryEntry];
@@ -264,21 +371,18 @@ const handleUpdateMetrics = async () => {
   const getStressBadgeVariant = (category) => {
     if (!category) return "secondary";
     switch (category.toLowerCase()) {
-      case "low": return "default";
-      case "medium": // Handle both "medium" and "moderate" cases
-      case "moderate": return "secondary";
-      case "high": return "destructive";
-      default: return "outline";
+      case "low":
+        return "success";      // green
+      case "medium":
+      case "moderate":
+        return "warning";      // yellow
+      case "high":
+        return "destructive";  // red
+      default:
+        return "outline";
     }
   };
   
-  const getStressIcon = (level) => {
-    if (level === null || level === undefined) return <Meh className="h-5 w-5" />;
-    if (level === 1) return <Smile className="h-5 w-5 text-green-500" />;
-    if (level === 2) return <Meh className="h-5 w-5 text-yellow-500" />;
-    return <Frown className="h-5 w-5 text-red-500" />;
-  };
-
   return (
     <div className="space-y-8">
       <div className="text-center md:text-left">
@@ -333,57 +437,91 @@ const handleUpdateMetrics = async () => {
         </CardFooter>
       </Card>
       
-      <div className="grid gap-6 md:grid-cols-5">
-        <Card className="md:col-span-3">
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Trends Carousel Card */}
+        <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
-              <CardTitle className="flex items-center gap-2"><TrendingUp className="h-5 w-5 text-primary" /> Stress Trends</CardTitle>
-              <CardDescription>Your stress levels over time (1 = Low Stress, 3 = High Stress).</CardDescription>
+              <CardTitle className="flex items-center gap-2">
+                {metricChartKeys[metricChartIndex].icon && (
+                  <span className="h-5 w-5 text-primary flex items-center">
+                    {React.createElement(metricChartKeys[metricChartIndex].icon, { className: "h-5 w-5 text-primary" })}
+                  </span>
+                )}
+                {metricChartKeys[metricChartIndex].label} Trends
+              </CardTitle>
+              <CardDescription>
+                {metricChartKeys[metricChartIndex].description}
+              </CardDescription>
             </div>
-            <Button variant="outline" size="sm" onClick={() => { /* Future: Implement refresh logic */ toast({ title: "Chart refreshed (placeholder)"}) }}>
-              <RefreshCw className="mr-2 h-4 w-4" /> Refresh
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={handlePrevChart}>Prev</Button>
+              <Button variant="outline" size="sm" onClick={handleNextChart}>Next</Button>
+              <Button variant="outline" size="sm" onClick={() => { toast({ title: "Chart refreshed (placeholder)" }) }}>
+                <RefreshCw className="mr-2 h-4 w-4" /> Refresh
+              </Button>
+            </div>
           </CardHeader>
-          <CardContent className="h-[300px] w-full">
-            {stressHistory.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={stressHistory} margin={{ top: 5, right: 20, left: -25, bottom: 5 }}>
+          <CardContent className="flex items-center justify-center h-[320px] w-full p-0">
+            {chartData.length > 0 ? (
+              <ResponsiveContainer width="98%" height={260}>
+                <LineChart data={chartData} margin={{ top: 20, right: 20, left: 20, bottom: 20 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                   <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                  <YAxis domain={[1, 3]} allowDecimals={false} stroke="hsl(var(--muted-foreground))" fontSize={12} ticks={[1, 2, 3]} />
-                  <Tooltip
-                    contentStyle={{ backgroundColor: "hsl(var(--background))", border: "1px solid hsl(var(--border))", borderRadius: "var(--radius)"}}
-                    labelStyle={{ color: "hsl(var(--foreground))" }}
-                    itemStyle={{ color: "hsl(var(--primary))" }}
+                  <YAxis
+                    domain={[yMin, yMax]}
+                    allowDecimals={true}
+                    stroke="hsl(var(--muted-foreground))"
+                    fontSize={12}
+                    ticks={getNeatTicks(yMin, yMax)}
+                    tickFormatter={v => Number.isInteger(v) ? v : Number(v.toFixed(1))}
                   />
-                  <Line type="monotone" dataKey="stress" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 4, fill: "hsl(var(--primary))" }} activeDot={{ r: 6 }} />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: "hsl(var(--background))", border: "1px solid hsl(var(--border))", borderRadius: "var(--radius)" }}
+                    labelStyle={{ color: "hsl(var(--foreground))" }}
+                    itemStyle={{ color: metricChartKeys[metricChartIndex].color }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey={metricChartKeys[metricChartIndex].key}
+                    stroke={metricChartKeys[metricChartIndex].color}
+                    strokeWidth={2}
+                    dot={{ r: 4, fill: metricChartKeys[metricChartIndex].color }}
+                    activeDot={{ r: 6 }}
+                    isAnimationActive={true}
+                  />
                 </LineChart>
               </ResponsiveContainer>
             ) : (
-              <div className="flex items-center justify-center h-full">
-                <p className="text-muted-foreground">Log your metrics to see stress trends.</p>
+              <div className="flex items-center justify-center h-full w-full">
+                <p className="text-muted-foreground">Log your metrics to see {metricChartKeys[metricChartIndex].label.toLowerCase()} trends.</p>
               </div>
             )}
           </CardContent>
         </Card>
 
-        <Card className="md:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2"><BarChart3 className="h-5 w-5 text-primary" /> Current Status</CardTitle>
-            <CardDescription>Based on your latest logged metrics.</CardDescription>
+        {/* Current Status Card */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2"><BarChart3 className="h-5 w-5 text-primary" /> Current Status</CardTitle>
+              <CardDescription>Based on your latest logged metrics.</CardDescription>
+            </div>
+            <Button variant="outline" size="sm" onClick={() => { toast({ title: "Chart refreshed (placeholder)" }) }}>
+              <RefreshCw className="mr-2 h-4 w-4" /> Refresh
+            </Button>
           </CardHeader>
           <CardContent className="space-y-3">
             {isLoading && !stressAnalysis ? (
-                <div className="flex items-center justify-center p-4">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                    <p className="ml-3 text-muted-foreground">Analyzing...</p>
-                </div>
+              <div className="flex items-center justify-center p-4">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                <p className="ml-3 text-muted-foreground">Analyzing...</p>
+              </div>
             ) : stressAnalysis?.stressCategory ? (
               <div className="text-center mb-4">
                 <Badge variant={getStressBadgeVariant(stressAnalysis.stressCategory)} className="text-lg px-4 py-2">
-                  {getStressIcon(stressAnalysis.stressLevel)} <span className="ml-2">{stressAnalysis.stressCategory} Stress</span> 
+                  {getStressIcon(stressAnalysis.stressLevel)} <span className="ml-2">{stressAnalysis.stressCategory} Stress</span>
                 </Badge>
-                {/* {stressAnalysis.stressLevel !== null && <p className="text-sm text-muted-foreground mt-1">Score: {stressAnalysis.stressLevel}/10</p>} */}
               </div>
             ) : (
               <p className="text-sm text-muted-foreground text-center py-2">Update metrics for current stress status.</p>
@@ -401,8 +539,8 @@ const handleUpdateMetrics = async () => {
                 );
               })}
             </div>
-             <Button variant="outline" className="w-full mt-4" disabled>
-                <LucideIcons.Watch className="mr-2 h-4 w-4" /> Sync Wearable Device (Coming Soon)
+            <Button variant="outline" className="w-full mt-4" disabled>
+              <LucideIcons.Watch className="mr-2 h-4 w-4" /> Sync Wearable Device (Coming Soon)
             </Button>
           </CardContent>
         </Card>

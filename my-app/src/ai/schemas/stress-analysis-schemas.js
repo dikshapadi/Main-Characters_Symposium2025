@@ -12,7 +12,7 @@ export const StressAnalysisInputSchema = z.object({
   SleepDuration: z.number().min(0).max(9).describe("Sleep duration in hours. Range: 0 to 9."),
   SleepEfficiency: z.number().min(60).max(95).describe("Sleep efficiency percentage. Range: 60 to 95."),
   Height: z.number().min(130).max(190).describe("Height in cm. Range: 130 to 190."),
-  Weight: z.number().min(10).max(100).describe("Weight in kg. Range: 10 to 100."),
+  Weight: z.number().min(10).max(150).describe("Weight in kg. Range: 10 to 150."),
   Age: z.number().min(18).max(65).describe("Age in years. Range: 18 to 65."),
   Sex: z.enum(["Female", "Male", "Other"]).describe("Sex: Female, Male, or Other."),
   DrinkingHabits: z.enum(["None", "Occasional", "Regular"])

@@ -1,6 +1,6 @@
 {
   "pages": {
-    "/cloner/page": [
+    "/journal/page": [
       "static/chunks/node_modules_next_dist_1a6ee436._.js",
       "static/chunks/src_app_favicon_ico_mjs_79b6a596._.js",
       "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_e52881ba._.js",
@@ -8,8 +8,8 @@
       "static/chunks/[root of the server]__1bf2bfbd._.js",
       "static/chunks/[root of the server]__736b3088._.css",
       "static/chunks/src_app_layout_jsx_f0e4c1a2._.js",
-      "static/chunks/_f37933e7._.js",
-      "static/chunks/src_app_cloner_page_b6f0a357.js",
+      "static/chunks/_05342b4b._.js",
+      "static/chunks/src_app_journal_page_jsx_b6f0a357._.js",
       "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_49a6ea35._.js",
       "static/chunks/node_modules_next_dist_compiled_2ce9398a._.js",
       "static/chunks/node_modules_next_dist_client_43e3ffb8._.js",
@@ -34,7 +34,7 @@
       "static/chunks/_e69f0d32._.js",
       "static/chunks/_be317ff2._.js"
     ],
-    "/voice-clarity/page": [
+    "/stress-detection/page": [
       "static/chunks/node_modules_next_dist_1a6ee436._.js",
       "static/chunks/src_app_favicon_ico_mjs_79b6a596._.js",
       "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_e52881ba._.js",
@@ -42,9 +42,17 @@
       "static/chunks/[root of the server]__1bf2bfbd._.js",
       "static/chunks/[root of the server]__736b3088._.css",
       "static/chunks/src_app_layout_jsx_f0e4c1a2._.js",
-      "static/chunks/node_modules_37549619._.js",
-      "static/chunks/src_e2cdfd25._.js",
-      "static/chunks/src_app_voice-clarity_page_jsx_b6f0a357._.js",
+      "static/chunks/src_54dccf76._.js",
+      "static/chunks/node_modules_lucide-react_dist_esm_icons_index_208f44ab.js",
+      "static/chunks/node_modules_lucide-react_dist_esm_icons_index_d4b74329.js",
+      "static/chunks/node_modules_lucide-react_dist_esm_icons_977c5428._.js",
+      "static/chunks/node_modules_lucide-react_dist_esm_lucide-react_a644e23c.js",
+      "static/chunks/node_modules_lucide-react_dist_esm_lucide-react_e8a320fa.js",
+      "static/chunks/node_modules_lucide-react_dist_esm_lucide-react_f0b2f71f.js",
+      "static/chunks/node_modules_lodash_ff39e716._.js",
+      "static/chunks/node_modules_recharts_es6_b82680d1._.js",
+      "static/chunks/node_modules_7443ccdb._.js",
+      "static/chunks/src_app_stress-detection_page_jsx_b6f0a357._.js",
       "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_49a6ea35._.js",
       "static/chunks/node_modules_next_dist_compiled_2ce9398a._.js",
       "static/chunks/node_modules_next_dist_client_43e3ffb8._.js",
