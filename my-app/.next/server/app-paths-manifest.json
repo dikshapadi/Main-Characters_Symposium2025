@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "/ai-therapist/page": "app/ai-therapist/page.js",
   "/cloner/page": "app/cloner/page.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
@@ -7,4 +8,8 @@
   "/stress-detection/page": "app/stress-detection/page.js",
   "/voice-clarity/page": "app/voice-clarity/page.js",
   "/work-automation/page": "app/work-automation/page.js"
+=======
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/voice-clarity/page": "app/voice-clarity/page.js"
+>>>>>>> eda3538c213d785a141717cbcfe77ece4c5799d8
 }

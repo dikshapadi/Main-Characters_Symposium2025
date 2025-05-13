@@ -1,5 +1,6 @@
 {
   "app": {
+<<<<<<< HEAD
     "[project]/src/app/ai-therapist/page": [
       "static/media/QGYvz_MVcBeNP4NJtEtqUYLknw-s.p.17653016.woff2"
     ],
@@ -15,10 +16,9 @@
     "[project]/src/app/stress-detection/page": [
       "static/media/QGYvz_MVcBeNP4NJtEtqUYLknw-s.p.17653016.woff2"
     ],
+=======
+>>>>>>> eda3538c213d785a141717cbcfe77ece4c5799d8
     "[project]/src/app/voice-clarity/page": [
-      "static/media/QGYvz_MVcBeNP4NJtEtqUYLknw-s.p.17653016.woff2"
-    ],
-    "[project]/src/app/work-automation/page": [
       "static/media/QGYvz_MVcBeNP4NJtEtqUYLknw-s.p.17653016.woff2"
     ]
   },
