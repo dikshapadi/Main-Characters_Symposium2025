@@ -1,5 +1,6 @@
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
   "node": {
     "405fef6bd1d497204830e8c940f9d880e3e2c43fbc": {
       "workers": {
@@ -27,10 +28,18 @@
       "workers": {
         "app/ai-therapist/page": {
           "moduleId": "[project]/.next-internal/server/app/ai-therapist/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/ai/flows/therapist-chat-flow.js [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+=======
+  "node": {
+    "40b3206493c8ac8cda6100d7b2816ac1f20bf571cc": {
+      "workers": {
+        "app/journal/page": {
+          "moduleId": "[project]/.next-internal/server/app/journal/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/ai/flows/sentiment-analysis.js [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+>>>>>>> f7bdaf6e58467ac7c42db65452ba89675cb3789f
           "async": false
         }
       },
       "layer": {
+<<<<<<< HEAD
         "app/ai-therapist/page": "action-browser"
       }
     },
@@ -38,10 +47,20 @@
       "workers": {
         "app/journal/page": {
           "moduleId": "[project]/.next-internal/server/app/journal/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/ai/flows/sentiment-analysis.js [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+=======
+        "app/journal/page": "action-browser"
+      }
+    },
+    "405fef6bd1d497204830e8c940f9d880e3e2c43fbc": {
+      "workers": {
+        "app/stress-detection/page": {
+          "moduleId": "[project]/.next-internal/server/app/stress-detection/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/ai/flows/stress-analysis-flow.js [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+>>>>>>> f7bdaf6e58467ac7c42db65452ba89675cb3789f
           "async": false
         }
       },
       "layer": {
+<<<<<<< HEAD
         "app/journal/page": "action-browser"
       }
     }
@@ -49,6 +68,12 @@
 =======
   "node": {},
 >>>>>>> eda3538c213d785a141717cbcfe77ece4c5799d8
+=======
+        "app/stress-detection/page": "action-browser"
+      }
+    }
+  },
+>>>>>>> f7bdaf6e58467ac7c42db65452ba89675cb3789f
   "edge": {},
   "encryptionKey": "OklyPyou3T4ID0k11w/YdF83Yw3VUliaJ1xqlJprw2E="
 }

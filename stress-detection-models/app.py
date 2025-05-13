@@ -204,7 +204,7 @@ def predict():
         # Prepare response - ensure all values are JSON serializable
         response = {
             "stressLevel": int(
-                y_pred[0] + 1
+                y_pred[0]
             ),  # Convert to 1-3 scale and ensure it's a Python int
             "stressCategory": str(predicted_class),  # Ensure it's a Python string
             "probabilities": {

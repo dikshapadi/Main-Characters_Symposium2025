@@ -9,6 +9,7 @@
   "/stress-detection/page": "app/stress-detection/page.js",
   "/voice-clarity/page": "app/voice-clarity/page.js",
   "/work-automation/page": "app/work-automation/page.js"
+<<<<<<< HEAD
 =======
 =======
   "/cloner/page": "app/cloner/page.js",
@@ -16,4 +17,6 @@
   "/favicon.ico/route": "app/favicon.ico/route.js",
   "/voice-clarity/page": "app/voice-clarity/page.js"
 >>>>>>> eda3538c213d785a141717cbcfe77ece4c5799d8
+=======
+>>>>>>> f7bdaf6e58467ac7c42db65452ba89675cb3789f
 }

@@ -23,8 +23,23 @@
     "[project]/src/app/cloner/page": [
       "static/media/QGYvz_MVcBeNP4NJtEtqUYLknw-s.p.17653016.woff2"
     ],
+<<<<<<< HEAD
 >>>>>>> 143933a941370dbdea84fdd3a1d4a1ea6d9f948f
+=======
+    "[project]/src/app/journal/page": [
+      "static/media/QGYvz_MVcBeNP4NJtEtqUYLknw-s.p.17653016.woff2"
+    ],
+    "[project]/src/app/page": [
+      "static/media/QGYvz_MVcBeNP4NJtEtqUYLknw-s.p.17653016.woff2"
+    ],
+    "[project]/src/app/stress-detection/page": [
+      "static/media/QGYvz_MVcBeNP4NJtEtqUYLknw-s.p.17653016.woff2"
+    ],
+>>>>>>> f7bdaf6e58467ac7c42db65452ba89675cb3789f
     "[project]/src/app/voice-clarity/page": [
+      "static/media/QGYvz_MVcBeNP4NJtEtqUYLknw-s.p.17653016.woff2"
+    ],
+    "[project]/src/app/work-automation/page": [
       "static/media/QGYvz_MVcBeNP4NJtEtqUYLknw-s.p.17653016.woff2"
     ]
   },

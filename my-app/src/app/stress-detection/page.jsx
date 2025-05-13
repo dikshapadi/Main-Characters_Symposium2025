@@ -53,7 +53,9 @@ import * as LucideIcons from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { analyzeStressAndSuggest } from "@/ai/flows/stress-analysis-flow";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from "@/components/ui/chart";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import {
+  LineChart, Line, AreaChart, Area, BarChart, Bar, ComposedChart, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ScatterChart, Scatter, PieChart, Pie, Cell, ReferenceArea, ReferenceLine
+} from "recharts";
 
 const initialTrackedMetrics = [
   { key: "HR", label: "Heart Rate", defaultValue: 75, unit: "bpm", icon: HeartPulse, inputType: "number", min: 50, max: 160, placeholder: "e.g., 75" },
@@ -113,6 +115,240 @@ function getNeatTicks(min, max) {
   return Array.from(new Set(ticks)).sort((a, b) => a - b);
 }
 
+function buildChartData(history, metricKey) {
+  // Metrics to accumulate per day
+  const accumulateKeys = ["Steps", "Distance", "Calories", "ActiveTime"];
+  // Metrics to show only latest per day
+  const latestPerDayKeys = ["SleepDuration", "SleepEfficiency"];
+  // Metrics to show every reading
+  const everyReadingKeys = ["stress", "HR", "HRV", "SpO2"];
+
+  if (accumulateKeys.includes(metricKey)) {
+    // Accumulate per day
+    const map = new Map();
+    history.forEach(entry => {
+      if (!map.has(entry.date)) {
+        map.set(entry.date, { ...entry, count: 1 });
+      } else {
+        const prev = map.get(entry.date);
+        map.set(entry.date, {
+          ...prev,
+          [metricKey]: (prev[metricKey] || 0) + (entry[metricKey] || 0),
+          count: prev.count + 1
+        });
+      }
+    });
+    return Array.from(map.values()).map(entry => ({
+      date: entry.date,
+      [metricKey]: entry[metricKey]
+    }));
+  } else if (latestPerDayKeys.includes(metricKey)) {
+    // Only latest per day
+    const map = new Map();
+    history.forEach(entry => {
+      map.set(entry.date, entry); // overwrite, so last one stays
+    });
+    return Array.from(map.values()).map(entry => ({
+      date: entry.date,
+      [metricKey]: entry[metricKey]
+    }));
+  } else if (everyReadingKeys.includes(metricKey)) {
+    // Every reading
+    return history.map(entry => ({
+      date: entry.date,
+      [metricKey]: entry[metricKey]
+    }));
+  } else {
+    // Default: every reading
+    return history.map(entry => ({
+      date: entry.date,
+      [metricKey]: entry[metricKey]
+    }));
+  }
+}
+
+// Helper to render the correct chart for each metric
+function renderMetricChart({ chartType, key, color }, chartData, yMin, yMax, getNeatTicks) {
+  switch (key) {
+    // 1. Heart Rate Trend Chart
+    case "HR":
+      return (
+        <LineChart data={chartData} margin={{ top: 20, right: 20, left: 20, bottom: 20 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+          <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+          <YAxis
+            domain={[50, 160]}
+            stroke="hsl(var(--muted-foreground))"
+            fontSize={12}
+            label={{ value: "bpm", angle: -90, position: "insideLeft" }}
+          />
+          {/* Reference area for normal HR */}
+          <ReferenceArea y1={60} y2={100} fill="#bbf7d0" fillOpacity={0.3} />
+          <Tooltip formatter={v => `${v} bpm`} />
+          <Line
+            type="monotone"
+            dataKey="HR"
+            stroke="#ef4444"
+            strokeWidth={2}
+            dot={({ cx, cy, value, index }) => (
+              <circle
+                key={cx + '-' + cy + '-' + index}
+                cx={cx}
+                cy={cy}
+                r={5}
+                fill={value > 100 ? "#ef4444" : "#22c55e"}
+                stroke="#fff"
+                strokeWidth={1}
+              />
+            )}
+            activeDot={{ r: 7 }}
+            isAnimationActive={true}
+          />
+        </LineChart>
+      );
+
+    // 2. HRV Chart
+    case "HRV":
+      return (
+        <AreaChart data={chartData} margin={{ top: 20, right: 20, left: 20, bottom: 20 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+          <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+          <YAxis
+            domain={[15, 120]}
+            stroke="hsl(var(--muted-foreground))"
+            fontSize={12}
+            label={{ value: "ms", angle: -90, position: "insideLeft" }}
+          />
+          {/* Reference areas for HRV zones */}
+          <ReferenceArea y1={15} y2={40} fill="#fee2e2" fillOpacity={0.3} />
+          <ReferenceArea y1={40} y2={70} fill="#fef9c3" fillOpacity={0.3} />
+          <ReferenceArea y1={70} y2={120} fill="#bbf7d0" fillOpacity={0.3} />
+          <Tooltip formatter={v => `${v} ms`} />
+          <Area
+            type="monotone"
+            dataKey="HRV"
+            stroke="#6366f1"
+            fill="#6366f1"
+            fillOpacity={0.2}
+            isAnimationActive={true}
+          />
+        </AreaChart>
+      );
+
+    // 3. SpO2 Chart
+    case "SpO2":
+      return (
+        <LineChart data={chartData} margin={{ top: 20, right: 20, left: 20, bottom: 20 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+          <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+          <YAxis
+            domain={[90, 100]}
+            stroke="hsl(var(--muted-foreground))"
+            fontSize={12}
+            label={{ value: "%", angle: -90, position: "insideLeft" }}
+            tickFormatter={v => `${v}%`}
+          />
+          {/* Reference area for normal SpO2 */}
+          <ReferenceArea y1={95} y2={100} fill="#bbf7d0" fillOpacity={0.3} />
+          <Tooltip formatter={v => `${v}%`} />
+          <Line
+            type="monotone"
+            dataKey="SpO2"
+            stroke="#06b6d4"
+            strokeWidth={2}
+            dot={{ r: 4, fill: "#06b6d4" }}
+            activeDot={{ r: 6 }}
+            isAnimationActive={true}
+          />
+        </LineChart>
+      );
+
+    // Steps Chart (Bar)
+    case "Steps":
+      return (
+        <BarChart data={chartData} margin={{ top: 20, right: 20, left: 20, bottom: 20 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+          <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+          <YAxis
+            stroke="#22c55e"
+            fontSize={12}
+            label={{ value: "Steps", angle: -90, position: "insideLeft" }}
+            tickFormatter={v => Number.isInteger(v) ? v : Number(v).toFixed(1)}
+          />
+          <ReferenceLine y={10000} stroke="#6366f1" strokeDasharray="4 4" label="Goal" />
+          <Tooltip formatter={v => `${v} steps`} />
+          <Bar dataKey="Steps" fill="#22c55e" />
+        </BarChart>
+      );
+
+    // Distance Chart (Line)
+    case "Distance":
+      return (
+        <LineChart data={chartData} margin={{ top: 20, right: 20, left: 20, bottom: 20 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+          <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+          <YAxis
+            stroke="#f59e42"
+            fontSize={12}
+            label={{ value: "Distance (km)", angle: -90, position: "insideLeft" }}
+            tickFormatter={v => Number.isInteger(v) ? v : Number(v).toFixed(1)}
+          />
+          <Tooltip formatter={v => (Number.isInteger(v) ? v : Number(v).toFixed(1)) + " km"} />
+          <Line
+            type="monotone"
+            dataKey="Distance"
+            stroke="#f59e42"
+            strokeWidth={2}
+            dot={{ r: 4, fill: "#f59e42" }}
+            activeDot={{ r: 6 }}
+            isAnimationActive={true}
+          />
+        </LineChart>
+      );
+
+    // 5. Sleep Duration Chart
+    case "SleepDuration":
+      // Calculate median for reference line
+      const durations = chartData.map(d => d.SleepDuration).filter(v => typeof v === "number");
+      const sorted = [...durations].sort((a, b) => a - b);
+      const median = sorted.length ? (sorted.length % 2 === 1
+        ? sorted[Math.floor(sorted.length / 2)]
+        : (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2) : null;
+      return (
+        <BarChart data={chartData} margin={{ top: 20, right: 20, left: 20, bottom: 20 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+          <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+          <YAxis
+            domain={['auto', 'auto']}
+            stroke="hsl(var(--muted-foreground))"
+            fontSize={12}
+            label={{ value: "hrs", angle: -90, position: "insideLeft" }}
+            tickFormatter={v => Number.isInteger(v) ? v : Number(v).toFixed(1)}
+          />
+          {median && <ReferenceLine y={median} stroke="#6366f1" strokeDasharray="4 4" label="Median" />}
+          <Tooltip formatter={v => `${v} hrs`} />
+          <Bar dataKey="SleepDuration" fill="#0ea5e9" />
+        </BarChart>
+      );
+
+    // 6. Sleep Efficiency vs. Duration Chart
+    case "SleepEfficiency":
+      return <div className="text-muted-foreground text-center w-full">Sleep Efficiency Trends chart is temporarily disabled.</div>;
+
+    // Default fallback
+    default:
+      return (
+        <LineChart data={chartData} margin={{ top: 20, right: 20, left: 20, bottom: 20 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+          <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+          <YAxis domain={[yMin, yMax]} allowDecimals={true} stroke="hsl(var(--muted-foreground))" fontSize={12} ticks={getNeatTicks(yMin, yMax)} />
+          <Tooltip />
+          <Line type="monotone" dataKey={key} stroke={color} strokeWidth={2} dot={{ r: 4, fill: color }} activeDot={{ r: 6 }} isAnimationActive={true} />
+        </LineChart>
+      );
+  }
+}
+
 // Define which metrics to display in "Current Status"
 const displayedMetricKeys = [
   "HR",
@@ -150,16 +386,16 @@ export default function StressDetectionPage() {
   const { toast } = useToast();
 
   const metricChartKeys = [
-    { key: "stress", label: "Stress", color: "hsl(var(--primary))", icon: Frown, yDomain: [1, 3], yTicks: [1, 2, 3], description: "Your stress levels over time (1 = Low Stress, 3 = High Stress)." },
-    { key: "HR", label: "Heart Rate", color: "#ef4444", icon: HeartPulse, description: "Heart Rate over time." },
-    { key: "HRV", label: "HRV", color: "#6366f1", icon: ActivitySquare, description: "HRV over time." },
-    { key: "SpO2", label: "Oxygen Saturation", color: "#06b6d4", icon: Droplets, description: "Oxygen Saturation over time." },
-    { key: "Steps", label: "Steps", color: "#22c55e", icon: Footprints, description: "Steps over time." },
-    { key: "Distance", label: "Distance", color: "#f59e42", icon: MapPin, description: "Distance over time." },
-    { key: "Calories", label: "Calories", color: "#fbbf24", icon: Flame, description: "Calories over time." },
-    { key: "ActiveTime", label: "Active Time", color: "#a21caf", icon: Timer, description: "Active Time over time." },
-    { key: "SleepDuration", label: "Sleep Duration", color: "#0ea5e9", icon: Bed, description: "Sleep Duration over time." },
-    { key: "SleepEfficiency", label: "Sleep Efficiency", color: "#eab308", icon: MoonStar, description: "Sleep Efficiency over time." },
+  { key: "stress", label: "Stress", color: "hsl(var(--primary))", icon: Frown, yDomain: [1, 3], yTicks: [1, 2, 3],chartType: "line", description: "Your stress levels over time (1 = Low Stress, 3 = High Stress)." },
+    { key: "HR", label: "Heart Rate", color: "#ef4444", icon: HeartPulse, chartType: "line", description: "Heart Rate over time." },
+    { key: "HRV", label: "HRV", color: "#6366f1", icon: ActivitySquare, chartType: "area", description: "HRV over time." },
+    { key: "SpO2", label: "Oxygen Saturation", color: "#06b6d4", icon: Droplets, chartType: "bar", description: "Oxygen Saturation over time." },
+    { key: "Steps", label: "Steps", color: "#22c55e", icon: Footprints, chartType: "bar", description: "Steps over time." },
+    { key: "Distance", label: "Distance", color: "#f59e42", icon: MapPin, chartType: "composed", description: "Distance over time." },
+    { key: "Calories", label: "Calories", color: "#fbbf24", icon: Flame, chartType: "bar", description: "Calories over time." },
+    { key: "ActiveTime", label: "Active Time", color: "#a21caf", icon: Timer, chartType: "heatmap", description: "Active Time over time." },
+    { key: "SleepDuration", label: "Sleep Duration", color: "#0ea5e9", icon: Bed, chartType: "histogram", description: "Sleep Duration over time." },
+    // ...etc
   ];
 
   const [metricChartIndex, setMetricChartIndex] = useState(0);
@@ -168,22 +404,8 @@ export default function StressDetectionPage() {
   const handleNextChart = () => setMetricChartIndex(i => (i === metricChartKeys.length - 1 ? 0 : i + 1));
 
   // Prepare chart data for each metric (using stressHistory dates and currentMetricValues for demo)
-  const chartData = stressHistory.map(entry => ({
-    date: entry.date,
-    HR: entry.HR,
-    HRV: entry.HRV,
-    SpO2: entry.SpO2,
-    Steps: entry.Steps,
-    Distance: entry.Distance,
-    Calories: entry.Calories,
-    ActiveTime: entry.ActiveTime,
-    SleepDuration: entry.SleepDuration,
-    SleepEfficiency: entry.SleepEfficiency,
-    stress: entry.stress,
-  }));
-
-  // Get the current metric key
   const currentMetricKey = metricChartKeys[metricChartIndex].key;
+  const chartData = buildChartData(stressHistory, currentMetricKey);
 
   // Get all values for the current metric
   const metricValues = chartData
@@ -279,11 +501,40 @@ const handleUpdateMetrics = async () => {
   };
 
   // Only display selected metrics in "Current Status"
+  const accumulateKeys = ["Steps", "Distance", "Calories", "ActiveTime"];
+  const latestPerDayKeys = ["SleepDuration", "SleepEfficiency"];
+  const everyReadingKeys = ["stress", "HR", "HRV", "SpO2"];
+
+  const today = new Date().toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' });
+  // Include the just-entered value as a new entry for today
+  const todayEntries = [
+    ...stressHistory.filter(e => e.date === today),
+    {
+      ...currentMetricValues,
+      date: today,
+    }
+  ];
+
   const newDisplayedMetrics = {};
+
   initialTrackedMetrics.forEach(metric => {
     if (displayedMetricKeys.includes(metric.key)) {
+      let value;
+      if (accumulateKeys.includes(metric.key)) {
+        // Sum all today's values including the just-entered value
+        value = todayEntries.reduce((sum, entry) => sum + (Number(entry[metric.key]) || 0), 0);
+      } else if (latestPerDayKeys.includes(metric.key)) {
+        // Latest value for today (from todayEntries, so includes just-entered value)
+        value = todayEntries.length > 0 ? todayEntries[todayEntries.length - 1][metric.key] : currentMetricValues[metric.key];
+      } else if (everyReadingKeys.includes(metric.key)) {
+        // Latest value for today (from todayEntries, so includes just-entered value)
+        value = todayEntries.length > 0 ? todayEntries[todayEntries.length - 1][metric.key] : currentMetricValues[metric.key];
+      } else {
+        // Fallback: use current input value
+        value = currentMetricValues[metric.key];
+      }
       newDisplayedMetrics[metric.key] = {
-        value: currentMetricValues[metric.key],
+        value,
         unit: metric.unit,
         label: metric.label,
         icon: metric.icon
@@ -465,32 +716,7 @@ const handleUpdateMetrics = async () => {
           <CardContent className="flex items-center justify-center h-[320px] w-full p-0">
             {chartData.length > 0 ? (
               <ResponsiveContainer width="98%" height={260}>
-                <LineChart data={chartData} margin={{ top: 20, right: 20, left: 20, bottom: 20 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                  <YAxis
-                    domain={[yMin, yMax]}
-                    allowDecimals={true}
-                    stroke="hsl(var(--muted-foreground))"
-                    fontSize={12}
-                    ticks={getNeatTicks(yMin, yMax)}
-                    tickFormatter={v => Number.isInteger(v) ? v : Number(v.toFixed(1))}
-                  />
-                  <Tooltip
-                    contentStyle={{ backgroundColor: "hsl(var(--background))", border: "1px solid hsl(var(--border))", borderRadius: "var(--radius)" }}
-                    labelStyle={{ color: "hsl(var(--foreground))" }}
-                    itemStyle={{ color: metricChartKeys[metricChartIndex].color }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey={metricChartKeys[metricChartIndex].key}
-                    stroke={metricChartKeys[metricChartIndex].color}
-                    strokeWidth={2}
-                    dot={{ r: 4, fill: metricChartKeys[metricChartIndex].color }}
-                    activeDot={{ r: 6 }}
-                    isAnimationActive={true}
-                  />
-                </LineChart>
+                {renderMetricChart(metricChartKeys[metricChartIndex], chartData, yMin, yMax, getNeatTicks)}
               </ResponsiveContainer>
             ) : (
               <div className="flex items-center justify-center h-full w-full">
@@ -529,11 +755,18 @@ const handleUpdateMetrics = async () => {
             <div className="space-y-2">
               {Object.entries(displayedMetricsInStatus).map(([key, metric]) => {
                 const MetricIcon = metric.icon;
+                // Round value to 1 decimal if it's a number
+                let displayValue = metric.value;
+                if (typeof displayValue === "number" && !isNaN(displayValue)) {
+                  displayValue = Number.isInteger(displayValue)
+                    ? displayValue
+                    : Number(displayValue.toFixed(1));
+                }
                 return (
                   <div key={key} className="flex items-center justify-between text-sm p-2 rounded-md bg-muted/30">
                     <span className="flex items-center gap-2 text-muted-foreground"><MetricIcon className="h-4 w-4" /> {metric.label}</span>
                     <span className="font-medium">
-                      {metric.value !== undefined && metric.value !== '' ? `${metric.value} ${metric.unit}` : 'N/A'}
+                      {displayValue !== undefined && displayValue !== '' ? `${displayValue} ${metric.unit}` : 'N/A'}
                     </span>
                   </div>
                 );
