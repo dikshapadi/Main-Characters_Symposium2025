@@ -9,10 +9,10 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { href: "/stress-detection", label: "Stress Detection", icon: HeartPulse },
-  { href: "/journal", label: "Journal", icon: BookOpenText },
-  { href: "/voice-clarity", label: "Voice Clarity", icon: MicVocal },
   { href: "/work-automation", label: "Work Automation", icon: Settings },
+  { href: "/stress-detection", label: "Stress Detection", icon: HeartPulse },
+  { href: "/voice-clarity", label: "Voice Clarity", icon: MicVocal },
+  { href: "/journal", label: "Journal", icon: BookOpenText },
   { href: "/ai-therapist", label: "Your AI Therapist", icon: LucideBot },
   { href: "/cloner", label: "Clone your voice", icon: Speaker },
 ];

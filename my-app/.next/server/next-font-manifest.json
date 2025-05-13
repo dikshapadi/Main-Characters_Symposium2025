@@ -1,5 +1,11 @@
 {
   "app": {
+    "[project]/src/app/ai-therapist/page": [
+      "static/media/QGYvz_MVcBeNP4NJtEtqUYLknw-s.p.17653016.woff2"
+    ],
+    "[project]/src/app/cloner/page": [
+      "static/media/QGYvz_MVcBeNP4NJtEtqUYLknw-s.p.17653016.woff2"
+    ],
     "[project]/src/app/journal/page": [
       "static/media/QGYvz_MVcBeNP4NJtEtqUYLknw-s.p.17653016.woff2"
     ],
@@ -7,6 +13,9 @@
       "static/media/QGYvz_MVcBeNP4NJtEtqUYLknw-s.p.17653016.woff2"
     ],
     "[project]/src/app/stress-detection/page": [
+      "static/media/QGYvz_MVcBeNP4NJtEtqUYLknw-s.p.17653016.woff2"
+    ],
+    "[project]/src/app/voice-clarity/page": [
       "static/media/QGYvz_MVcBeNP4NJtEtqUYLknw-s.p.17653016.woff2"
     ],
     "[project]/src/app/work-automation/page": [
