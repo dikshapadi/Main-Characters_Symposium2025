@@ -1,6 +1,7 @@
 {
   "pages": {
 <<<<<<< HEAD
+<<<<<<< HEAD
     "/ai-therapist/page": [
       "static/chunks/node_modules_next_dist_1a6ee436._.js",
       "static/chunks/src_app_favicon_ico_mjs_79b6a596._.js",
@@ -19,6 +20,8 @@
       "static/chunks/_e69f0d32._.js",
       "static/chunks/_be317ff2._.js"
     ],
+=======
+>>>>>>> 143933a941370dbdea84fdd3a1d4a1ea6d9f948f
     "/cloner/page": [
       "static/chunks/node_modules_next_dist_1a6ee436._.js",
       "static/chunks/src_app_favicon_ico_mjs_79b6a596._.js",
@@ -27,6 +30,7 @@
       "static/chunks/[root of the server]__1bf2bfbd._.js",
       "static/chunks/[root of the server]__736b3088._.css",
       "static/chunks/src_app_layout_jsx_f0e4c1a2._.js",
+<<<<<<< HEAD
       "static/chunks/_f37933e7._.js",
       "static/chunks/src_app_cloner_page_b6f0a357.js",
       "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_49a6ea35._.js",
@@ -90,6 +94,8 @@
       "static/chunks/node_modules_recharts_es6_b82680d1._.js",
       "static/chunks/node_modules_7443ccdb._.js",
       "static/chunks/src_app_stress-detection_page_jsx_b6f0a357._.js",
+=======
+>>>>>>> 143933a941370dbdea84fdd3a1d4a1ea6d9f948f
       "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_49a6ea35._.js",
       "static/chunks/node_modules_next_dist_compiled_2ce9398a._.js",
       "static/chunks/node_modules_next_dist_client_43e3ffb8._.js",
@@ -98,8 +104,11 @@
       "static/chunks/_e69f0d32._.js",
       "static/chunks/_be317ff2._.js"
     ],
+<<<<<<< HEAD
 =======
 >>>>>>> eda3538c213d785a141717cbcfe77ece4c5799d8
+=======
+>>>>>>> 143933a941370dbdea84fdd3a1d4a1ea6d9f948f
     "/voice-clarity/page": [
       "static/chunks/node_modules_next_dist_1a6ee436._.js",
       "static/chunks/src_app_favicon_ico_mjs_79b6a596._.js",
