@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+
 import {
   UserCog,
   HeartPulse,
@@ -56,6 +57,8 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLe
 import {
   LineChart, Line, AreaChart, Area, BarChart, Bar, ComposedChart, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ScatterChart, Scatter, PieChart, Pie, Cell, ReferenceArea, ReferenceLine
 } from "recharts";
+
+
 
 const initialTrackedMetrics = [
   { key: "HR", label: "Heart Rate", defaultValue: 75, unit: "bpm", icon: HeartPulse, inputType: "number", min: 50, max: 160, placeholder: "e.g., 75" },
@@ -490,6 +493,7 @@ export default function StressDetectionPage() {
     }
 
     async function simulateAndAnalyze() {
+
       const simulated = {};
       // Copy user input for non-generated fields
       initialTrackedMetrics.forEach(metric => {
@@ -550,11 +554,11 @@ export default function StressDetectionPage() {
         }
       } else if (scenario === "Exercise") {
         hr = getRandomInt(130, 180);
-        hrv = getRandomInt(10, 30);
+        hrv = getRandomInt(19, 30);
         spo2 = getRandomInt(90, 94);
         if (rand < 0.05) {
           hr = getRandomInt(110, 200);
-          hrv = getRandomInt(5, 10);
+          hrv = getRandomInt(20, 40);
           spo2 = getRandomInt(85, 90);
         }
       } else if (scenario === "Social") {
@@ -1033,6 +1037,11 @@ const handleUpdateMetrics = async () => {
               <p className="text-sm text-muted-foreground text-center py-4">
                 Log your metrics to get personalized suggestions.
               </p>
+            )}
+            {(stressAnalysis?.stressCategory === "High" || stressAnalysis?.stressCategory === "Medium") && (
+              <Button asChild className="mt-4 w-full">
+              <a href="/ai-therapist">Talk to your AI therapist</a>
+            </Button>
             )}
           </CardContent>
         </Card>

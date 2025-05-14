@@ -1,3 +1,6 @@
 {
-  "/stress-detection/page": "app/stress-detection/page.js"
+  "/ai-therapist/page": "app/ai-therapist/page.js",
+  "/journal/page": "app/journal/page.js",
+  "/stress-detection/page": "app/stress-detection/page.js",
+  "/voice-clarity/page": "app/voice-clarity/page.js"
 }

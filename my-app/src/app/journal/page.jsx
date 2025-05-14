@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Wand2, Smile, Meh, Frown, Edit3, Trash2, Save } from "lucide-react";
+import { Wand2, Smile, Meh, Frown, Edit3, Trash2, Save, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 
@@ -111,10 +111,23 @@ export default function JournalPage() {
 
   return (
     <div className="grid md:grid-cols-[300px_1fr] gap-6 h-full max-h-[calc(100vh-theme(spacing.24))]">
-      <Card className="flex flex-col">
+      <Card className="flex flex-col relative">
         <CardHeader>
-          <CardTitle>Past Entries</CardTitle>
-          <CardDescription>Review your previous journal entries.</CardDescription>
+          <CardTitle>Your Entries</CardTitle>
+          {/* <CardDescription>Review your previous journal entries.</CardDescription> */}
+          <Button
+            variant="default"
+            size="icon"
+            className="absolute top-4 right-4 rounded-full shadow-md hover:scale-110 transition-transform duration-150"
+            aria-label="Add New Entry"
+            onClick={() => {
+              setSelectedEntry(null);
+              setJournalEntry("");
+              setAnalysisResult(null);
+            }}
+          >
+            <Plus className="h-5 w-5" />
+          </Button>
         </CardHeader>
         <CardContent className="flex-grow overflow-hidden p-0">
           <ScrollArea className="h-full p-4">
@@ -207,6 +220,11 @@ export default function JournalPage() {
               <p className="text-sm text-muted-foreground p-3 bg-muted/50 rounded-md whitespace-pre-wrap">
                 {analysisResult.analysis}
               </p>
+              {analysisResult.score < -0.3 && (
+                <Button asChild className="mt-4 w-full">
+                  <a href="/ai-therapist">Talk to your AI therapist</a>
+                </Button>
+              )}
             </CardContent>
           </Card>
         )}

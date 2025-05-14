@@ -10,6 +10,28 @@
       "layer": {
         "app/stress-detection/page": "action-browser"
       }
+    },
+    "409e9d21ded5e8a16e29ca44858166e099d8e4330f": {
+      "workers": {
+        "app/ai-therapist/page": {
+          "moduleId": "[project]/.next-internal/server/app/ai-therapist/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/ai/flows/therapist-chat-flow.js [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/ai-therapist/page": "action-browser"
+      }
+    },
+    "40b3206493c8ac8cda6100d7b2816ac1f20bf571cc": {
+      "workers": {
+        "app/journal/page": {
+          "moduleId": "[project]/.next-internal/server/app/journal/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/ai/flows/sentiment-analysis.js [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/journal/page": "action-browser"
+      }
     }
   },
   "edge": {},
