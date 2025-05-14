@@ -295,7 +295,7 @@ function renderMetricChart({ chartType, key, color }, chartData, yMin, yMax, get
             label={{ value: "Date", position: "insideBottom", offset: -10 }}
           />
           <YAxis
-            stroke="#22c55e"
+            stroke="hsl(var(--muted-foreground))"
             fontSize={12}
             label={{ value: "Steps (count)", angle: -90, position: "insideLeft" }}
             tickFormatter={v => Number.isInteger(v) ? v : Number(v).toFixed(1)}
@@ -318,7 +318,7 @@ function renderMetricChart({ chartType, key, color }, chartData, yMin, yMax, get
             label={{ value: "Date", position: "insideBottom", offset: -10 }}
           />
           <YAxis
-            stroke="#f59e42"
+            stroke="hsl(var(--muted-foreground))"
             fontSize={12}
             label={{ value: "Distance (km)", angle: -90, position: "insideLeft" }}
             tickFormatter={v => Number.isInteger(v) ? v : Number(v).toFixed(1)}
@@ -406,7 +406,7 @@ function renderMetricChart({ chartType, key, color }, chartData, yMin, yMax, get
             label={{ value: "Date", position: "insideBottom", offset: -10 }}
           />
           <YAxis
-            stroke="#a21caf"
+            stroke="hsl(var(--muted-foreground))"
             fontSize={12}
             label={{ value: "Time (mins)", angle: -90, position: "insideLeft" }}
             tickFormatter={v => Number.isInteger(v) ? v : Number(v).toFixed(1)}
@@ -436,7 +436,7 @@ function renderMetricChart({ chartType, key, color }, chartData, yMin, yMax, get
             label={{ value: "Date", position: "insideBottom", offset: -10 }}
           />
           <YAxis
-            stroke="#fbbf24"
+            stroke="hsl(var(--muted-foreground))"
             fontSize={12}
             label={{ value: "Calories (kcal)", angle: -90, position: "insideLeft" }}
             tickFormatter={v => Number.isInteger(v) ? v : Number(v).toFixed(1)}
