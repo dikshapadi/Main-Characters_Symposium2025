@@ -1,5 +1,3 @@
 {
-  "/page": "app/page.js",
-  "/stress-detection/page": "app/stress-detection/page.js",
-  "/work-automation/page": "app/work-automation/page.js"
+  "/stress-detection/page": "app/stress-detection/page.js"
 }

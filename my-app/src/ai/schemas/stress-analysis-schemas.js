@@ -7,7 +7,7 @@ export const StressAnalysisInputSchema = z.object({
   SpO2: z.number().min(80).max(100).describe("Oxygen Saturation percentage. Range: 80 to 100."),
   Steps: z.number().min(0).max(600).describe("Number of steps. Range: 0 to 600."),
   Distance: z.number().min(0.0).max(1.0).describe("Distance in km. Range: 0.0 to 1.0."),
-  Calories: z.number().min(0.0).max(10).describe("Calories burned. Range: 0.0 to 10."),
+  Calories: z.number().min(0.0).max(100).describe("Calories burned. Range: 0.0 to 10."),
   ActiveTime: z.number().min(0).max(5).describe("Active time in minutes. Range: 0 to 5."),
   SleepDuration: z.number().min(0).max(9).describe("Sleep duration in hours. Range: 0 to 9."),
   SleepEfficiency: z.number().min(10).max(95).describe("Sleep efficiency percentage. Range: 10 to 95."),
