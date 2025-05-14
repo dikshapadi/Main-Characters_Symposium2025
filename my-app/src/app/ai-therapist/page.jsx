@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
@@ -91,8 +90,14 @@ export default function AiTherapistPage() {
     setInputValue("");
     setIsSending(true);
 
+    // Prepare history for the backend
+    const history = [...messages, userMessage].map(msg => ({
+      role: msg.sender === "user" ? "user" : "ai",
+      content: msg.text,
+    }));
+
     try {
-      const result = await getTherapistResponse({ userInput: currentInput });
+      const result = await getTherapistResponse({ userInput: currentInput, history });
       const aiMessage = {
         id: (Date.now() + 1).toString(),
         sender: "ai",

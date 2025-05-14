@@ -1,6 +1,3 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
-  "/ai-therapist/page": "app/ai-therapist/page.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/journal/page": "app/journal/page.js"
+  "/ai-therapist/page": "app/ai-therapist/page.js"
 }
