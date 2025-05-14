@@ -115,6 +115,11 @@ function getNeatTicks(min, max) {
   return Array.from(new Set(ticks)).sort((a, b) => a - b);
 }
 
+// Helper for random integer in [min, max]
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 function buildChartData(history, metricKey) {
   // Metrics to accumulate per day
   const accumulateKeys = ["Steps", "Distance", "Calories", "ActiveTime"];
@@ -502,6 +507,73 @@ export default function StressDetectionPage() {
 
       // Generate context first
       simulated.Context = getRandomValue({ key: "Context", options: ["Sleep", "Home", "Work", "Commute", "Exercise", "Social"] });
+
+      // Scenario-based HR, HRV, SpO2 logic
+      let hr, hrv, spo2;
+      const scenario = simulated.Context;
+      const rand = Math.random();
+      if (scenario === "Sleep") {
+        hr = getRandomInt(50, 70);
+        hrv = getRandomInt(70, 100);
+        spo2 = getRandomInt(95, 100);
+        if (rand < 0.05) {
+          hr = getRandomInt(30, 90);
+          hrv = getRandomInt(20, 40);
+          spo2 = getRandomInt(85, 90);
+        }
+      } else if (scenario === "Home") {
+        hr = getRandomInt(60, 80);
+        hrv = getRandomInt(50, 80);
+        spo2 = getRandomInt(95, 100);
+        if (rand < 0.05) {
+          hr = getRandomInt(40, 100);
+          hrv = getRandomInt(20, 40);
+          spo2 = getRandomInt(90, 94);
+        }
+      } else if (scenario === "Work") {
+        hr = getRandomInt(70, 100);
+        hrv = getRandomInt(40, 70);
+        spo2 = getRandomInt(95, 100);
+        if (rand < 0.05) {
+          hr = getRandomInt(60, 110);
+          hrv = getRandomInt(20, 40);
+          spo2 = getRandomInt(90, 94);
+        }
+      } else if (scenario === "Commute") {
+        hr = getRandomInt(80, 110);
+        hrv = getRandomInt(30, 50);
+        spo2 = getRandomInt(94, 98);
+        if (rand < 0.05) {
+          hr = getRandomInt(70, 120);
+          hrv = getRandomInt(20, 40);
+          spo2 = getRandomInt(80, 94);
+        }
+      } else if (scenario === "Exercise") {
+        hr = getRandomInt(130, 180);
+        hrv = getRandomInt(10, 30);
+        spo2 = getRandomInt(90, 94);
+        if (rand < 0.05) {
+          hr = getRandomInt(110, 200);
+          hrv = getRandomInt(5, 10);
+          spo2 = getRandomInt(85, 90);
+        }
+      } else if (scenario === "Social") {
+        hr = getRandomInt(70, 100);
+        hrv = getRandomInt(40, 60);
+        spo2 = getRandomInt(95, 100);
+        if (rand < 0.05) {
+          hr = getRandomInt(60, 110);
+          hrv = getRandomInt(20, 40);
+          spo2 = getRandomInt(90, 94);
+        }
+      } else {
+        hr = getRandomInt(60, 80);
+        hrv = getRandomInt(50, 80);
+        spo2 = getRandomInt(95, 100);
+      }
+      simulated.HR = hr;
+      simulated.HRV = hrv;
+      simulated.SpO2 = spo2;
 
       // Context-based logic
       if (["Sleep", "Commute"].includes(simulated.Context)) {
