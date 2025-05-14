@@ -139,16 +139,17 @@ export default function JournalPage() {
                   <Button
                     key={entry.id}
                     variant="ghost"
-                    className={`w-full justify-start h-auto p-3 text-left flex flex-col items-start ${selectedEntry?.id === entry.id ? 'bg-accent' : ''}`}
+                    className={`justify-start h-auto p-3 text-left flex flex-col items-start ${selectedEntry?.id === entry.id ? 'bg-accent' : ''}`}
                     onClick={() => handleSelectEntry(entry)}
+                    style={{ width: "100%" }} // ensures it fits the card, but doesn't overflow
                   >
                     <span className="font-semibold text-sm">{new Date(entry.date).toLocaleDateString()}</span>
-                    <p className="text-xs text-muted-foreground truncate w-full">{entry.content}</p>
+                    <p className="text-xs text-muted-foreground truncate">{entry.content}</p>
                     {entry.sentiment && (
-                       <Badge variant="outline" className="mt-1 text-xs">
-                         {getSentimentIcon(entry.sentiment.score)}
-                         <span className="ml-1">{entry.sentiment.sentiment} ({entry.sentiment.score.toFixed(2)})</span>
-                       </Badge>
+                      <Badge variant="outline" className="mt-1 text-xs">
+                        {getSentimentIcon(entry.sentiment.score)}
+                        <span className="ml-1">{entry.sentiment.sentiment} ({entry.sentiment.score.toFixed(2)})</span>
+                      </Badge>
                     )}
                   </Button>
                 ))}
@@ -221,9 +222,11 @@ export default function JournalPage() {
                 {analysisResult.analysis}
               </p>
               {analysisResult.score < -0.3 && (
-                <Button asChild className="mt-4 w-full">
-                  <a href="/ai-therapist">Talk to your AI therapist</a>
-                </Button>
+                <div className="flex justify-end">
+                  <Button asChild className="mt-4">
+                    <a href="/ai-therapist">Talk to your AI therapist</a>
+                  </Button>
+                </div>
               )}
             </CardContent>
           </Card>
