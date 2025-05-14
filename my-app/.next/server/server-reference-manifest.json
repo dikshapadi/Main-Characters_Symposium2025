@@ -1,14 +1,14 @@
 {
   "node": {
-    "409e9d21ded5e8a16e29ca44858166e099d8e4330f": {
+    "405fef6bd1d497204830e8c940f9d880e3e2c43fbc": {
       "workers": {
-        "app/ai-therapist/page": {
-          "moduleId": "[project]/.next-internal/server/app/ai-therapist/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/ai/flows/therapist-chat-flow.js [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+        "app/stress-detection/page": {
+          "moduleId": "[project]/.next-internal/server/app/stress-detection/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/ai/flows/stress-analysis-flow.js [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
           "async": false
         }
       },
       "layer": {
-        "app/ai-therapist/page": "action-browser"
+        "app/stress-detection/page": "action-browser"
       }
     }
   },

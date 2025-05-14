@@ -163,7 +163,7 @@ function buildChartData(history, metricKey) {
   } else if (everyReadingKeys.includes(metricKey)) {
     // Every reading
     return history.map(entry => ({
-      date: entry.date,
+      time: entry.time, // <-- this is correct
       [metricKey]: entry[metricKey]
     }));
   } else {
@@ -178,19 +178,23 @@ function buildChartData(history, metricKey) {
 // Helper to render the correct chart for each metric
 function renderMetricChart({ chartType, key, color }, chartData, yMin, yMax, getNeatTicks) {
   switch (key) {
-    // 1. Heart Rate Trend Chart
+    // 1. Heart Rate Trend Chart (add axis labels)
     case "HR":
       return (
-        <LineChart data={chartData} margin={{ top: 20, right: 20, left: 20, bottom: 20 }}>
+        <LineChart data={chartData} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-          <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+          <XAxis
+            dataKey="time"
+            stroke="hsl(var(--muted-foreground))"
+            fontSize={12}
+            label={{ value: "Time (24h)", position: "insideBottom", offset: -10 }}
+          />
           <YAxis
             domain={[50, 160]}
             stroke="hsl(var(--muted-foreground))"
             fontSize={12}
-            label={{ value: "bpm", angle: -90, position: "insideLeft" }}
+            label={{ value: "Heart Rate (bpm)", angle: -90, position: "insideLeft" }}
           />
-          {/* Reference area for normal HR */}
           <ReferenceArea y1={60} y2={100} fill="#bbf7d0" fillOpacity={0.3} />
           <Tooltip formatter={v => `${v} bpm`} />
           <Line
@@ -215,19 +219,23 @@ function renderMetricChart({ chartType, key, color }, chartData, yMin, yMax, get
         </LineChart>
       );
 
-    // 2. HRV Chart
+    // 2. HRV Chart (add axis labels)
     case "HRV":
       return (
-        <AreaChart data={chartData} margin={{ top: 20, right: 20, left: 20, bottom: 20 }}>
+        <AreaChart data={chartData} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-          <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+          <XAxis
+            dataKey="time"
+            stroke="hsl(var(--muted-foreground))"
+            fontSize={12}
+            label={{ value: "Time (24h)", position: "insideBottom", offset: -10 }}
+          />
           <YAxis
             domain={[15, 120]}
             stroke="hsl(var(--muted-foreground))"
             fontSize={12}
-            label={{ value: "ms", angle: -90, position: "insideLeft" }}
+            label={{ value: "HRV (ms)", angle: -90, position: "insideLeft" }}
           />
-          {/* Reference areas for HRV zones */}
           <ReferenceArea y1={15} y2={40} fill="#fee2e2" fillOpacity={0.3} />
           <ReferenceArea y1={40} y2={70} fill="#fef9c3" fillOpacity={0.3} />
           <ReferenceArea y1={70} y2={120} fill="#bbf7d0" fillOpacity={0.3} />
@@ -243,20 +251,24 @@ function renderMetricChart({ chartType, key, color }, chartData, yMin, yMax, get
         </AreaChart>
       );
 
-    // 3. SpO2 Chart
+    // 3. SpO2 Chart (add axis labels)
     case "SpO2":
       return (
-        <LineChart data={chartData} margin={{ top: 20, right: 20, left: 20, bottom: 20 }}>
+        <LineChart data={chartData} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-          <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+          <XAxis
+            dataKey="time"
+            stroke="hsl(var(--muted-foreground))"
+            fontSize={12}
+            label={{ value: "Time (24h)", position: "insideBottom", offset: -10 }}
+          />
           <YAxis
             domain={[90, 100]}
             stroke="hsl(var(--muted-foreground))"
             fontSize={12}
-            label={{ value: "%", angle: -90, position: "insideLeft" }}
+            label={{ value: "SpO2 (%)", angle: -90, position: "insideLeft" }}
             tickFormatter={v => `${v}%`}
           />
-          {/* Reference area for normal SpO2 */}
           <ReferenceArea y1={95} y2={100} fill="#bbf7d0" fillOpacity={0.3} />
           <Tooltip formatter={v => `${v}%`} />
           <Line
@@ -271,16 +283,21 @@ function renderMetricChart({ chartType, key, color }, chartData, yMin, yMax, get
         </LineChart>
       );
 
-    // Steps Chart (Bar)
+    // Steps Chart (add axis labels)
     case "Steps":
       return (
-        <BarChart data={chartData} margin={{ top: 20, right: 20, left: 20, bottom: 20 }}>
+        <BarChart data={chartData} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-          <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+          <XAxis
+            dataKey="date"
+            stroke="hsl(var(--muted-foreground))"
+            fontSize={12}
+            label={{ value: "Date", position: "insideBottom", offset: -10 }}
+          />
           <YAxis
             stroke="#22c55e"
             fontSize={12}
-            label={{ value: "Steps", angle: -90, position: "insideLeft" }}
+            label={{ value: "Steps (count)", angle: -90, position: "insideLeft" }}
             tickFormatter={v => Number.isInteger(v) ? v : Number(v).toFixed(1)}
           />
           <ReferenceLine y={10000} stroke="#6366f1" strokeDasharray="4 4" label="Goal" />
@@ -289,12 +306,17 @@ function renderMetricChart({ chartType, key, color }, chartData, yMin, yMax, get
         </BarChart>
       );
 
-    // Distance Chart (Line)
+    // Distance Chart (add axis labels)
     case "Distance":
       return (
-        <LineChart data={chartData} margin={{ top: 20, right: 20, left: 20, bottom: 20 }}>
+        <LineChart data={chartData} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-          <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+          <XAxis
+            dataKey="date"
+            stroke="hsl(var(--muted-foreground))"
+            fontSize={12}
+            label={{ value: "Date", position: "insideBottom", offset: -10 }}
+          />
           <YAxis
             stroke="#f59e42"
             fontSize={12}
@@ -314,26 +336,24 @@ function renderMetricChart({ chartType, key, color }, chartData, yMin, yMax, get
         </LineChart>
       );
 
-    // 5. Sleep Duration Chart
+    // 5. Sleep Duration Chart (remove median, add axis labels)
     case "SleepDuration":
-      // Calculate median for reference line
-      const durations = chartData.map(d => d.SleepDuration).filter(v => typeof v === "number");
-      const sorted = [...durations].sort((a, b) => a - b);
-      const median = sorted.length ? (sorted.length % 2 === 1
-        ? sorted[Math.floor(sorted.length / 2)]
-        : (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2) : null;
       return (
-        <BarChart data={chartData} margin={{ top: 20, right: 20, left: 20, bottom: 20 }}>
+        <BarChart data={chartData} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-          <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+          <XAxis
+            dataKey="date"
+            stroke="hsl(var(--muted-foreground))"
+            fontSize={12}
+            label={{ value: "Date", position: "insideBottom", offset: -10 }}
+          />
           <YAxis
             domain={['auto', 'auto']}
             stroke="hsl(var(--muted-foreground))"
             fontSize={12}
-            label={{ value: "hrs", angle: -90, position: "insideLeft" }}
+            label={{ value: "Sleep Duration (hrs)", angle: -90, position: "insideLeft" }}
             tickFormatter={v => Number.isInteger(v) ? v : Number(v).toFixed(1)}
           />
-          {median && <ReferenceLine y={median} stroke="#6366f1" strokeDasharray="4 4" label="Median" />}
           <Tooltip formatter={v => `${v} hrs`} />
           <Bar dataKey="SleepDuration" fill="#0ea5e9" />
         </BarChart>
@@ -342,6 +362,89 @@ function renderMetricChart({ chartType, key, color }, chartData, yMin, yMax, get
     // 6. Sleep Efficiency vs. Duration Chart
     case "SleepEfficiency":
       return <div className="text-muted-foreground text-center w-full">Sleep Efficiency Trends chart is temporarily disabled.</div>;
+
+    // Stress Chart (add axis labels)
+    case "stress":
+      return (
+        <LineChart data={chartData} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+          <XAxis
+            dataKey="time"
+            stroke="hsl(var(--muted-foreground))"
+            fontSize={12}
+            label={{ value: "Time (24h)", position: "insideBottom", offset: -10 }}
+          />
+          <YAxis
+            domain={[1, 3]}
+            ticks={[1, 2, 3]}
+            stroke="hsl(var(--muted-foreground))"
+            fontSize={12}
+            label={{ value: "Stress Level", angle: -90, position: "insideLeft" }}
+          />
+          <Tooltip formatter={v => `Level ${v}`} />
+          <Line
+            type="monotone"
+            dataKey="stress"
+            stroke="hsl(var(--primary))"
+            strokeWidth={2}
+            dot={{ r: 4, fill: "hsl(var(--primary))" }}
+            activeDot={{ r: 6 }}
+            isAnimationActive={true}
+          />
+        </LineChart>
+      );
+
+    // Active Time Trends (y: mins, x: date)
+    case "ActiveTime":
+      return (
+        <LineChart data={chartData} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+          <XAxis
+            dataKey="date"
+            stroke="hsl(var(--muted-foreground))"
+            fontSize={12}
+            label={{ value: "Date", position: "insideBottom", offset: -10 }}
+          />
+          <YAxis
+            stroke="#a21caf"
+            fontSize={12}
+            label={{ value: "Time (mins)", angle: -90, position: "insideLeft" }}
+            tickFormatter={v => Number.isInteger(v) ? v : Number(v).toFixed(1)}
+          />
+          <Tooltip formatter={v => `${v} mins`} />
+          <Line
+            type="monotone"
+            dataKey="ActiveTime"
+            stroke="#a21caf"
+            strokeWidth={2}
+            dot={{ r: 4, fill: "#a21caf" }}
+            activeDot={{ r: 6 }}
+            isAnimationActive={true}
+          />
+        </LineChart>
+      );
+
+    // Calories Trends (BarChart, y: kcal, x: date)
+    case "Calories":
+      return (
+        <BarChart data={chartData} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+          <XAxis
+            dataKey="date"
+            stroke="hsl(var(--muted-foreground))"
+            fontSize={12}
+            label={{ value: "Date", position: "insideBottom", offset: -10 }}
+          />
+          <YAxis
+            stroke="#fbbf24"
+            fontSize={12}
+            label={{ value: "Calories (kcal)", angle: -90, position: "insideLeft" }}
+            tickFormatter={v => Number.isInteger(v) ? v : Number(v).toFixed(1)}
+          />
+          <Tooltip formatter={v => `${v} kcal`} />
+          <Bar dataKey="Calories" fill="#fbbf24" />
+        </BarChart>
+      );
 
     // Default fallback
     default:
@@ -553,11 +656,11 @@ export default function StressDetectionPage() {
           spo2 = getRandomInt(80, 94);
         }
       } else if (scenario === "Exercise") {
-        hr = getRandomInt(130, 180);
+        hr = getRandomInt(130, 159);
         hrv = getRandomInt(19, 30);
         spo2 = getRandomInt(90, 94);
         if (rand < 0.05) {
-          hr = getRandomInt(110, 200);
+          hr = getRandomInt(110, 150);
           hrv = getRandomInt(20, 40);
           spo2 = getRandomInt(85, 90);
         }
@@ -795,9 +898,10 @@ const handleUpdateMetrics = async () => {
 
     setStressAnalysis(stressAnalysis);
 
-    const today = new Date();
+    const now = new Date();
     const newHistoryEntry = {
-      date: today.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' }),
+      date: now.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' }),
+      time: now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false }), // "14:05"
       stress: result.stressLevel,
       HR: Number(currentMetricValues.HR),
       HRV: Number(currentMetricValues.HRV),
