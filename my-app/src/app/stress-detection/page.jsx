@@ -60,16 +60,16 @@ import {
 const initialTrackedMetrics = [
   { key: "HR", label: "Heart Rate", defaultValue: 75, unit: "bpm", icon: HeartPulse, inputType: "number", min: 50, max: 160, placeholder: "e.g., 75" },
   { key: "HRV", label: "HRV", defaultValue: 65, unit: "ms", icon: ActivitySquare, inputType: "number", min: 15, max: 120, placeholder: "e.g., 65" },
-  { key: "SpO2", label: "Oxygen Saturation", defaultValue: 98, unit: "%", icon: Droplets, inputType: "number", min: 88, max: 100, placeholder: "e.g., 98" },
+  { key: "SpO2", label: "Oxygen Saturation", defaultValue: 98, unit: "%", icon: Droplets, inputType: "number", min: 80, max: 100, placeholder: "e.g., 98" },
   { key: "Steps", label: "Steps", defaultValue: 300, unit: "", icon: Footprints, inputType: "number", min: 0, max: 600, placeholder: "e.g., 300" },
-  { key: "Distance", label: "Distance", defaultValue: 0.3, unit: "km", icon: MapPin, inputType: "number", min: 0.0, max: 0.6, step: "0.01", placeholder: "e.g., 0.3" },
-  { key: "Calories", label: "Calories", defaultValue: 6, unit: "kcal", icon: Flame, inputType: "number", min: 2, max: 10, step: "0.1", placeholder: "e.g., 6" },
+  { key: "Distance", label: "Distance", defaultValue: 0.3, unit: "km", icon: MapPin, inputType: "number", min: 0.0, max: 1.0, step: "0.01", placeholder: "e.g., 0.3" },
+  { key: "Calories", label: "Calories", defaultValue: 6, unit: "kcal", icon: Flame, inputType: "number", min: 0.0, max: 100, step: "0.1", placeholder: "e.g., 6" },
   { key: "ActiveTime", label: "Active Time", defaultValue: 2, unit: "min", icon: Timer, inputType: "number", min: 0, max: 5, placeholder: "e.g., 2" },
   { key: "SleepDuration", label: "Sleep Duration", defaultValue: 7, unit: "hours", icon: Bed, inputType: "number", min: 0, max: 9, step: "0.1", placeholder: "e.g., 7" },
-  { key: "SleepEfficiency", label: "Sleep Efficiency", defaultValue: 85, unit: "%", icon: MoonStar, inputType: "number", min: 60, max: 95, placeholder: "e.g., 85" },
+  { key: "SleepEfficiency", label: "Sleep Efficiency", defaultValue: 85, unit: "%", icon: MoonStar, inputType: "number", min: 10, max: 95, placeholder: "e.g., 85" },
   { key: "Height", label: "Height", defaultValue: 170, unit: "cm", icon: Ruler, inputType: "number", min: 130, max: 190, placeholder: "e.g., 170" },
   { key: "Weight", label: "Weight", defaultValue: 65, unit: "kg", icon: Weight, inputType: "number", min: 10, max: 100, placeholder: "e.g., 65" },
-  { key: "Age", label: "Age", defaultValue: 30, unit: "years", icon: User, inputType: "number", min: 18, max: 65, placeholder: "e.g., 30" },
+  { key: "Age", label: "Age", defaultValue: 30, unit: "years", icon: User, inputType: "number", min: 1, max: 65, placeholder: "e.g., 30" },
   { key: "Sex", label: "Sex", defaultValue: "Female", unit: "", icon: UserCog, inputType: "select", options: ["Female", "Male", "Other"] },
   { key: "DrinkingHabits", label: "Drinking Habits", defaultValue: "Occasional", unit: "", icon: GlassWater, inputType: "select", options: ["None", "Occasional", "Regular"] },
   { key: "SmokingHabits", label: "Smoking Habits", defaultValue: "Non-smoker", unit: "", icon: Cigarette, inputType: "select", options: ["Non-smoker", "Occasional", "Regular"] },
@@ -370,13 +370,7 @@ const getStressIcon = (level) => {
 };
 
 export default function StressDetectionPage() {
-  const [currentMetricValues, setCurrentMetricValues] = useState(() => {
-    const initial = {};
-    initialTrackedMetrics.forEach(metric => {
-      initial[metric.key] = metric.defaultValue;
-    });
-    return initial;
-  });
+  const [currentMetricValues, setCurrentMetricValues] = useState({});
   const [displayedMetricsInStatus, setDisplayedMetricsInStatus] = useState({});
 
 
@@ -469,6 +463,147 @@ export default function StressDetectionPage() {
     }
   }, [stressHistory]);
 
+  useEffect(() => {
+    function getRandomValue(metric) {
+      if (metric.key === "Context") {
+        const opts = ["Sleep", "Home", "Work", "Commute", "Exercise", "Social"];
+        return opts[Math.floor(Math.random() * opts.length)];
+      }
+      if (["HR", "HRV", "SpO2", "ActiveTime", "SleepDuration", "SleepEfficiency"].includes(metric.key)) {
+        const min = metric.min;
+        const max = metric.max;
+        const step = metric.step ? parseFloat(metric.step) : 1;
+        const rand = Math.random();
+        let value = min + rand * (max - min);
+        value = Math.round(value / step) * step;
+        if (step >= 1) value = Math.round(value);
+        if (step < 1) value = Number(value.toFixed(step === 0.01 ? 2 : 1));
+        return value;
+      }
+      // For all other keys, use current user input
+      return currentMetricValues[metric.key] ?? metric.defaultValue;
+    }
+
+    async function simulateAndAnalyze() {
+      const simulated = {};
+      // Copy user input for non-generated fields
+      initialTrackedMetrics.forEach(metric => {
+        if (
+          [
+            "Height", "Weight", "Age", "Sex", "DrinkingHabits",
+            "SmokingHabits", "PastMedicalHistory", "Depression"
+          ].includes(metric.key)
+        ) {
+          simulated[metric.key] = currentMetricValues[metric.key] ?? metric.defaultValue;
+        } else if (metric.key !== "Steps" && metric.key !== "Calories" && metric.key !== "Distance") {
+          simulated[metric.key] = getRandomValue(metric);
+        }
+      });
+
+      // Generate context first
+      simulated.Context = getRandomValue({ key: "Context", options: ["Sleep", "Home", "Work", "Commute", "Exercise", "Social"] });
+
+      // Context-based logic
+      if (["Sleep", "Commute"].includes(simulated.Context)) {
+        simulated.Steps = 0;
+        simulated.Distance = 0;
+        simulated.ActiveTime = 0;
+        simulated.Calories = 0;
+      } else if (["Home", "Work"].includes(simulated.Context)) {
+        // Very low activity
+        simulated.ActiveTime = Math.round(Math.random()); // 0 or 1 min
+        const height_cm = Number(simulated.Height);
+        simulated.Steps = Math.round(Math.random() * 10); // 0–10 steps
+        const step_length = height_cm * 0.413 * 0.01;
+        const distance_m = simulated.Steps * step_length;
+        simulated.Distance = Number((distance_m / 1000).toFixed(2)); // 0–0.01 km approx
+
+        // Calories calculation (may be zero if ActiveTime is zero)
+        if (simulated.ActiveTime === 0 || simulated.Steps === 0) {
+          simulated.Calories = 0;
+        } else {
+          const age = Number(simulated.Age);
+          const weight = Number(simulated.Weight);
+          const hr = Number(simulated.HR);
+          const activeTime = Number(simulated.ActiveTime);
+          let caloriesPerMin = 0;
+          if (simulated.Sex === "Female") {
+            caloriesPerMin = ((age * 0.074) - (weight * 0.05741) + (hr * 0.4472) - 20.4022) / 4.184;
+          } else if (simulated.Sex === "Male") {
+            caloriesPerMin = ((age * 0.2017) + (weight * 0.09036) + (hr * 0.6309) - 55.0969) / 4.184;
+          } else {
+            caloriesPerMin = ((age * 0.13785) + (weight * 0.016475) + (hr * 0.53905) - 37.74955) / 4.184;
+          }
+          let totalCalories = caloriesPerMin * activeTime;
+          totalCalories = Math.max(0, Number(totalCalories.toFixed(2)));
+          simulated.Calories = totalCalories;
+        }
+      } else {
+        // Normal activity simulation
+        simulated.ActiveTime = getRandomValue(initialTrackedMetrics.find(m => m.key === "ActiveTime"));
+        // Generate Distance randomly
+        const minDist = initialTrackedMetrics.find(m => m.key === "Distance").min;
+        const maxDist = initialTrackedMetrics.find(m => m.key === "Distance").max;
+        const stepDist = initialTrackedMetrics.find(m => m.key === "Distance").step ? parseFloat(initialTrackedMetrics.find(m => m.key === "Distance").step) : 0.01;
+        let distance_km = minDist + Math.random() * (maxDist - minDist);
+        distance_km = Math.round(distance_km / stepDist) * stepDist;
+        distance_km = Number(distance_km.toFixed(2));
+        simulated.Distance = distance_km;
+
+        // Calculate Steps using the formula
+        const height_cm = Number(simulated.Height);
+        const distance_m = distance_km * 1000;
+        const step_length = height_cm * 0.413 * 0.01;
+        const step_count = Math.round(distance_m / step_length);
+        simulated.Steps = step_count;
+
+        // Calories calculation
+        if (
+          Number(simulated.Steps) === 0 ||
+          Number(simulated.Distance) === 0 ||
+          Number(simulated.ActiveTime) === 0
+        ) {
+          simulated.Calories = 0;
+        } else {
+          const age = Number(simulated.Age);
+          const weight = Number(simulated.Weight);
+          const hr = Number(simulated.HR);
+          const activeTime = Number(simulated.ActiveTime);
+          let caloriesPerMin = 0;
+          if (simulated.Sex === "Female") {
+            caloriesPerMin = ((age * 0.074) - (weight * 0.05741) + (hr * 0.4472) - 20.4022) / 4.184;
+          } else if (simulated.Sex === "Male") {
+            caloriesPerMin = ((age * 0.2017) + (weight * 0.09036) + (hr * 0.6309) - 55.0969) / 4.184;
+          } else {
+            caloriesPerMin = ((age * 0.13785) + (weight * 0.016475) + (hr * 0.53905) - 37.74955) / 4.184;
+          }
+          let totalCalories = caloriesPerMin * activeTime;
+          totalCalories = Math.max(0, Number(totalCalories.toFixed(2)));
+          simulated.Calories = totalCalories;
+        }
+      }
+
+      setCurrentMetricValues(simulated);
+    }
+
+    simulateAndAnalyze();
+    const interval = setInterval(simulateAndAnalyze, 60 * 1000); // every 1 minute
+
+    return () => clearInterval(interval);
+    // eslint-disable-next-line
+  }, [currentMetricValues.Height, currentMetricValues.Weight, currentMetricValues.Age, currentMetricValues.Sex, currentMetricValues.DrinkingHabits, currentMetricValues.SmokingHabits, currentMetricValues.PastMedicalHistory, currentMetricValues.Depression]);
+
+  useEffect(() => {
+    // Only run if all values are present (not empty)
+    if (
+      Object.keys(currentMetricValues).length === initialTrackedMetrics.length &&
+      Object.values(currentMetricValues).every(v => v !== undefined && v !== null && v !== "")
+    ) {
+      handleUpdateMetrics();
+    }
+    // eslint-disable-next-line
+  }, [currentMetricValues]);
+
   const handleInputChange = (key, value) => {
     setCurrentMetricValues(prev => ({ ...prev, [key]: initialTrackedMetrics.find(m => m.key === key)?.inputType === 'number' ? (value === '' ? '' : Number(value)) : value }));
   };
@@ -495,7 +630,7 @@ const handleUpdateMetrics = async () => {
     Sex: currentMetricValues.Sex,
     DrinkingHabits: currentMetricValues.DrinkingHabits,
     SmokingHabits: currentMetricValues.SmokingHabits,
-    PastMedicalHistory: currentMetricValues.PastMedicalHistory === "" ? null : currentMetricValues.PastMedicalHistory,
+    PastMedicalHistory: currentMetricValues.PastMedicalHistory === "" ? "None" : currentMetricValues.PastMedicalHistory,
     Depression: currentMetricValues.Depression,
     Context: currentMetricValues.Context
   };
