@@ -89,7 +89,7 @@ export function AppShell({ children }) {
 
         <div className="flex items-center gap-3">
           <p className="mr-2 text-sm text-muted-foreground hidden md:block">
-            Welcome, Alex Morgan
+            Welcome, Tony Susan Dave & Rocky!
           </p>
           <Button variant="ghost" size="icon" aria-label="Toggle theme" className="rounded-full" onClick={toggleTheme}>
             {isClient && theme === 'light' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
