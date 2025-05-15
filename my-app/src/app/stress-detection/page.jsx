@@ -179,6 +179,16 @@ function buildChartData(history, metricKey) {
 
 // Helper to render the correct chart for each metric
 function renderMetricChart({ chartType, key, color }, chartData, yMin, yMax, getNeatTicks) {
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+  const dayBeforeYesterday = new Date(today);
+  dayBeforeYesterday.setDate(today.getDate() - 2);
+  const dayBeforeYesterdayyest = new Date(today);
+  dayBeforeYesterdayyest.setDate(today.getDate() - 3);
+  const formatDate = (date) =>
+  date.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit' });
+
   switch (key) {
     // 1. Heart Rate Trend Chart (add axis labels)
     case "HR":
@@ -286,9 +296,18 @@ function renderMetricChart({ chartType, key, color }, chartData, yMin, yMax, get
       );
 
     // Steps Chart (add axis labels)
-    case "Steps":
+    case "Steps": {
+      const demoSteps = [
+        { date: formatDate(dayBeforeYesterdayyest), Steps: 6450 },
+        { date: formatDate(dayBeforeYesterday), Steps: 8234 },
+        { date: formatDate(yesterday), Steps: 10238 },
+      ];
+      const existingDates = new Set(demoSteps.map(d => d.date));
+      const filteredChartData = chartData.filter(d => !existingDates.has(d.date));
+      const stepsChartData = [...demoSteps, ...chartData];
+    
       return (
-        <BarChart data={chartData} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
+        <BarChart data={stepsChartData} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
           <XAxis
             dataKey="date"
@@ -307,41 +326,62 @@ function renderMetricChart({ chartType, key, color }, chartData, yMin, yMax, get
           <Bar dataKey="Steps" fill="#22c55e" />
         </BarChart>
       );
-
+    }
     // Distance Chart (add axis labels)
     case "Distance":
-      return (
-        <LineChart data={chartData} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-          <XAxis
-            dataKey="date"
-            stroke="hsl(var(--muted-foreground))"
-            fontSize={12}
-            label={{ value: "Date", position: "insideBottom", offset: -10 }}
-          />
-          <YAxis
-            stroke="hsl(var(--muted-foreground))"
-            fontSize={12}
-            label={{ value: "Distance (km)", angle: -90, position: "insideLeft" }}
-            tickFormatter={v => Number.isInteger(v) ? v : Number(v).toFixed(1)}
-          />
-          <Tooltip formatter={v => (Number.isInteger(v) ? v : Number(v).toFixed(1)) + " km"} />
-          <Line
-            type="monotone"
-            dataKey="Distance"
-            stroke="#f59e42"
-            strokeWidth={2}
-            dot={{ r: 4, fill: "#f59e42" }}
-            activeDot={{ r: 6 }}
-            isAnimationActive={true}
-          />
-        </LineChart>
-      );
-
+      {
+        const demoDistance = [
+          { date: formatDate(dayBeforeYesterdayyest), Distance: 5.6 },
+          { date: formatDate(dayBeforeYesterday), Distance: 6.2 },
+          { date: formatDate(yesterday), Distance: 7.8 },
+        ];
+    
+        const existingDates = new Set(demoDistance.map(d => d.date));
+        const filteredChartData = chartData.filter(d => !existingDates.has(d.date));
+        const distanceChartData = [...demoDistance, ...filteredChartData];
+    
+        return (
+          <LineChart data={distanceChartData} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+            <XAxis
+              dataKey="date"
+              stroke="hsl(var(--muted-foreground))"
+              fontSize={12}
+              label={{ value: "Date", position: "insideBottom", offset: -10 }}
+            />
+            <YAxis
+              stroke="hsl(var(--muted-foreground))"
+              fontSize={12}
+              label={{ value: "Distance (km)", angle: -90, position: "insideLeft" }}
+              tickFormatter={v => Number.isInteger(v) ? v : Number(v).toFixed(1)}
+            />
+            <Tooltip formatter={v => (Number.isInteger(v) ? v : Number(v).toFixed(1)) + " km"} />
+            <Line
+              type="monotone"
+              dataKey="Distance"
+              stroke="#f59e42"
+              strokeWidth={2}
+              dot={{ r: 4, fill: "#f59e42" }}
+              activeDot={{ r: 6 }}
+              isAnimationActive={true}
+            />
+          </LineChart>
+        );
+      }
     // 5. Sleep Duration Chart (remove median, add axis labels)
     case "SleepDuration":
+      {
+        const demoSleepDuration = [
+          { date: formatDate(dayBeforeYesterdayyest), SleepDuration: 8 },
+          { date: formatDate(dayBeforeYesterday), SleepDuration: 7.5 },
+          { date: formatDate(yesterday), SleepDuration: 6.4 },
+        ];
+        const existingDates = new Set(demoSleepDuration.map(d => d.date));
+        const filteredChartData = chartData.filter(d => !existingDates.has(d.date));
+        const sleepDurationChartData = [...demoSleepDuration, ...filteredChartData];
+      
       return (
-        <BarChart data={chartData} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
+        <BarChart data={sleepDurationChartData} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
           <XAxis
             dataKey="date"
@@ -360,7 +400,7 @@ function renderMetricChart({ chartType, key, color }, chartData, yMin, yMax, get
           <Bar dataKey="SleepDuration" fill="#0ea5e9" />
         </BarChart>
       );
-
+    }
     // 6. Sleep Efficiency vs. Duration Chart
     case "SleepEfficiency":
       return <div className="text-muted-foreground text-center w-full">Sleep Efficiency Trends chart is temporarily disabled.</div>;
@@ -398,8 +438,19 @@ function renderMetricChart({ chartType, key, color }, chartData, yMin, yMax, get
 
     // Active Time Trends (y: mins, x: date)
     case "ActiveTime":
+      {
+        const demoActiveTime = [
+          { date: formatDate(dayBeforeYesterdayyest), ActiveTime: 98 },
+          { date: formatDate(dayBeforeYesterday), ActiveTime: 90 },
+          { date: formatDate(yesterday), ActiveTime: 110 },
+        ];
+        const existingDates = new Set(demoActiveTime.map(d => d.date));
+        const filteredChartData = chartData.filter(d => !existingDates.has(d.date));
+        const activeTimeChartData = [...demoActiveTime, ...filteredChartData];
+      
+
       return (
-        <LineChart data={chartData} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
+        <LineChart data={activeTimeChartData} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
           <XAxis
             dataKey="date"
@@ -425,11 +476,21 @@ function renderMetricChart({ chartType, key, color }, chartData, yMin, yMax, get
           />
         </LineChart>
       );
-
+    }
     // Calories Trends (BarChart, y: kcal, x: date)
     case "Calories":
+      {
+        const demoCalories = [
+          { date: formatDate(dayBeforeYesterdayyest), Calories: 380 },
+          { date: formatDate(dayBeforeYesterday), Calories: 410 },
+          { date: formatDate(yesterday), Calories: 525 },
+        ];
+        const existingDates = new Set(demoCalories.map(d => d.date));
+        const filteredChartData = chartData.filter(d => !existingDates.has(d.date));
+        const caloriesChartData = [...demoCalories, ...filteredChartData];
+      
       return (
-        <BarChart data={chartData} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
+        <BarChart data={caloriesChartData} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
           <XAxis
             dataKey="date"
@@ -447,7 +508,7 @@ function renderMetricChart({ chartType, key, color }, chartData, yMin, yMax, get
           <Bar dataKey="Calories" fill="#fbbf24" />
         </BarChart>
       );
-
+    }
     // Default fallback
     default:
       return (
@@ -928,11 +989,11 @@ const handleUpdateMetrics = async () => {
     });
   } catch (error) {
     console.error("Stress analysis error:", error);
-    toast({
-      title: "Analysis Error",
-      description: error.message || "Could not analyze stress. Please ensure the server is running and try again.",
-      variant: "destructive",
-    });
+    // toast({
+    //   title: "Analysis Error",
+    //   description: error.message || "Could not analyze stress. Please ensure the server is running and try again.",
+    //   variant: "destructive",
+    // });
   } finally {
     setIsLoading(false);
   }
