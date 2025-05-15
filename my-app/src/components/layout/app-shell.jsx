@@ -78,7 +78,12 @@ export function AppShell({ children }) {
 
           <Link href="/" className="flex items-center gap-2 text-xl font-semibold text-foreground">
             <AppLogo />
-            <span>Daura Desk</span>
+            <span><h1>Daura</h1>
+              <p className="text-xs text-sky-700/80 dark:text-teal-200/70">
+            Your voice-enabled companion
+          </p>
+            </span>
+            
           </Link>
         </div>
 

@@ -21,13 +21,11 @@ export default function Sidebar() {
   return (
     <aside className="w-64 h-full p-3"> {/* Changed h-screen to h-full */}
       <div className="bg-gradient-to-b from-sky-50/90 to-sky-100/80 dark:from-teal-800/30 dark:to-teal-900/40 backdrop-blur-md border border-sky-200/60 dark:border-teal-700/30 rounded-2xl shadow-lg h-full flex flex-col py-6 px-3">
-        <div className="px-4 mb-6 text-center">
+        <div className="px-4 mb-4 text-center">
           <h2 className="text-2xl font-semibold text-sky-900 dark:text-teal-50">
             Daura Desk
           </h2>
-          <p className="text-xs text-sky-700/80 dark:text-teal-200/70">
-            Your voice-enabled companion
-          </p>
+          
         </div>
         <nav className="space-y-2 px-2 flex-grow overflow-y-auto">
           {sidebarNavItems.map((item) => {
