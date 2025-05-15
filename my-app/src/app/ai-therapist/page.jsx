@@ -158,12 +158,12 @@ export default function AiTherapistPage() {
           <CardDescription>A safe space to talk about your thoughts and feelings. This is not a replacement for professional help.</CardDescription>
         </CardHeader>
         <CardContent className="flex-grow p-0 overflow-hidden">
-          <ScrollArea className="h-full p-4 md:p-6 space-y-6">
+          <ScrollArea className="h-full p-4 md:p-6">
             {messages.map((msg) => (
               <div
                 key={msg.id}
                 className={cn(
-                  "flex items-end gap-2 w-full",
+                  "flex items-end gap-2 w-full mb-3", // Added mb-6 for bottom margin
                   msg.sender === "user" ? "justify-end" : "justify-start"
                 )}
               >
