@@ -58,7 +58,9 @@ import {
   LineChart, Line, AreaChart, Area, BarChart, Bar, ComposedChart, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ScatterChart, Scatter, PieChart, Pie, Cell, ReferenceArea, ReferenceLine
 } from "recharts";
 
-
+const AUTO_GENERATED_KEYS = [
+  "HR", "HRV", "SpO2", "Steps", "Distance", "Calories", "ActiveTime", "SleepDuration", "SleepEfficiency"
+];
 
 const initialTrackedMetrics = [
   { key: "HR", label: "Heart Rate", defaultValue: 75, unit: "bpm", icon: HeartPulse, inputType: "number", min: 50, max: 160, placeholder: "e.g., 75" },
@@ -483,7 +485,7 @@ const getStressIcon = (level) => {
 export default function StressDetectionPage() {
   const [currentMetricValues, setCurrentMetricValues] = useState({});
   const [displayedMetricsInStatus, setDisplayedMetricsInStatus] = useState({});
-
+  const [isSynced, setIsSynced] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
   const [stressAnalysis, setStressAnalysis] = useState(null);
@@ -765,12 +767,14 @@ export default function StressDetectionPage() {
       setCurrentMetricValues(simulated);
     }
 
+    if (!isSynced) return;
+
     simulateAndAnalyze();
     const interval = setInterval(simulateAndAnalyze, 60 * 1000); // every 1 minute
 
     return () => clearInterval(interval);
     // eslint-disable-next-line
-  }, [currentMetricValues.Height, currentMetricValues.Weight, currentMetricValues.Age, currentMetricValues.Sex, currentMetricValues.DrinkingHabits, currentMetricValues.SmokingHabits, currentMetricValues.PastMedicalHistory, currentMetricValues.Depression]);
+  }, [isSynced, currentMetricValues.Height, currentMetricValues.Weight, currentMetricValues.Age, currentMetricValues.Sex, currentMetricValues.DrinkingHabits, currentMetricValues.SmokingHabits, currentMetricValues.PastMedicalHistory, currentMetricValues.Depression]);
 
   useEffect(() => {
     // Only run if all values are present (not empty)
@@ -957,14 +961,31 @@ const handleUpdateMetrics = async () => {
       </div>
 
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2"><ClipboardEdit className="h-5 w-5 text-primary" /> Log Your Metrics</CardTitle>
-          <CardDescription>Enter your latest health data to update the analysis and get insights.</CardDescription>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle className="flex items-center gap-2">
+              <ClipboardEdit className="h-5 w-5 text-primary" /> Log Your Metrics
+            </CardTitle>
+            <CardDescription>
+              Enter your latest health data to update the analysis and get insights.
+            </CardDescription>
+          </div>
+          <Button
+            variant="default"
+            className="ml-2 w-full md:w-auto"
+            onClick={() => setIsSynced((prev) => !prev)}
+          >
+            <LucideIcons.Watch className="mr-2 h-4 w-4" />
+            {isSynced ? "Unsync Wearable Device" : "Sync Wearable Device"}
+          </Button>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {initialTrackedMetrics.map((metric) => {
               const MetricIcon = metric.icon;
+              const isAuto = AUTO_GENERATED_KEYS.includes(metric.key);
+              // If synced, skip rendering auto-generated fields
+              if (isSynced && isAuto) return null;
               return (
                 <div key={metric.key} className="space-y-1">
                   <Label htmlFor={metric.key} className="flex items-center gap-1">
@@ -977,6 +998,7 @@ const handleUpdateMetrics = async () => {
                       value={currentMetricValues[metric.key] || ""}
                       onChange={(e) => handleInputChange(metric.key, e.target.value)}
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      disabled={isSynced && isAuto}
                     >
                       {metric.options.map(opt => <option key={opt} value={opt}>{opt.charAt(0).toUpperCase() + opt.slice(1)}</option>)}
                     </select>
@@ -989,6 +1011,7 @@ const handleUpdateMetrics = async () => {
                       onChange={(e) => handleInputChange(metric.key, e.target.value)}
                       placeholder={metric.placeholder}
                       className="bg-input/50"
+                      disabled={isSynced && isAuto}
                     />
                   )}
                 </div>
@@ -1087,15 +1110,15 @@ const handleUpdateMetrics = async () => {
                 );
               })}
             </div>
-            <Button variant="outline" className="w-full mt-4" disabled>
-              <LucideIcons.Watch className="mr-2 h-4 w-4" /> Sync Wearable Device (Coming Soon)
-            </Button>
+            {/* <Button variant="outline" className="w-full mt-4" disabled>
+              <LucideIcons.Watch className="mr-2 h-4 w-4" /> Sync Wearable Device
+            </Button> */}
           </CardContent>
         </Card>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <Card>
+        <Card className="md:col-span-2">
           <CardHeader>
             <CardTitle className="flex items-center gap-2"><Brain className="h-5 w-5 text-primary" /> Today&apos;s AI Suggestion</CardTitle>
             <CardDescription>Based on your current stress analysis.</CardDescription>
@@ -1103,17 +1126,17 @@ const handleUpdateMetrics = async () => {
           <CardContent className="space-y-4 min-h-[200px]">
             {isLoading && !stressAnalysis ? (
               <div className="flex items-center justify-center h-full">
-                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                 <p className="ml-3 text-muted-foreground">Generating suggestions...</p>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                <p className="ml-3 text-muted-foreground">Generating suggestions...</p>
               </div>
             ) : stressAnalysis?.primarySuggestion ? (
               <>
                 <div className="p-4 rounded-lg bg-accent/50 border border-accent">
                   <div className="flex items-start gap-3">
                     {stressAnalysis.primarySuggestion.icon ? (
-                        <DynamicIcon name={stressAnalysis.primarySuggestion.icon} className="h-6 w-6 text-primary mt-1" />
+                      <DynamicIcon name={stressAnalysis.primarySuggestion.icon} className="h-6 w-6 text-primary mt-1" />
                     ) : (
-                        <AlertCircle className="h-6 w-6 text-primary mt-1" />
+                      <AlertCircle className="h-6 w-6 text-primary mt-1" />
                     )}
                     <div>
                       <h4 className="font-semibold">{stressAnalysis.primarySuggestion.title || "Primary Suggestion"}</h4>
@@ -1122,9 +1145,9 @@ const handleUpdateMetrics = async () => {
                   </div>
                 </div>
                 {stressAnalysis.analysisSummary && (
-                    <p className="text-sm text-muted-foreground italic p-2 bg-muted/20 rounded-md">
-                        <strong>AI Note:</strong> {stressAnalysis.analysisSummary}
-                    </p>
+                  <p className="text-sm text-muted-foreground italic p-2 bg-muted/20 rounded-md">
+                    <strong>AI Note:</strong> {stressAnalysis.analysisSummary}
+                  </p>
                 )}
                 {stressAnalysis.secondarySuggestions && stressAnalysis.secondarySuggestions.length > 0 && (
                   <div>
@@ -1144,36 +1167,10 @@ const handleUpdateMetrics = async () => {
             )}
             {(stressAnalysis?.stressCategory === "High" || stressAnalysis?.stressCategory === "Medium") && (
               <Button asChild className="mt-4 w-full">
-              <a href="/ai-therapist">Talk to your AI therapist</a>
-            </Button>
+                <a href="/ai-therapist">Talk to your AI therapist</a>
+              </Button>
             )}
           </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Bell className="h-5 w-5 text-primary" /> Smart Alerts</CardTitle>
-            <CardDescription>We&apos;ll notify you when stress rises (customization coming soon).</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex justify-between items-center p-3 rounded-md bg-muted/30">
-              <span className="text-sm text-muted-foreground">Alert Threshold</span>
-              <Badge variant="outline">Level 7+</Badge>
-            </div>
-            <div className="flex justify-between items-center p-3 rounded-md bg-muted/30">
-              <span className="text-sm text-muted-foreground">Break Reminder</span>
-              <Badge variant="outline">Every 45 min</Badge>
-            </div>
-            <div className="flex justify-between items-center p-3 rounded-md bg-muted/30">
-              <span className="text-sm text-muted-foreground">Notification Type</span>
-              <Badge variant="outline">Desktop + Mobile</Badge>
-            </div>
-          </CardContent>
-          <CardFooter>
-            <Button variant="default" className="w-full" disabled>
-              <Settings className="mr-2 h-4 w-4" /> Customize Alerts (Coming Soon)
-            </Button>
-          </CardFooter>
         </Card>
       </div>
 
